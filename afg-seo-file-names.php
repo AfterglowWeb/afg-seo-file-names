@@ -9,7 +9,7 @@
  *
  * @wordpress-plugin
  * Plugin Name: SEO File Names
- * Plugin URI: https://afterglow-web.agency
+ * Plugin URI: https://afterglow-web.agency/en/seo-file-names/
  * Description: Seo File Names aims to save you time and boost your SEO by automatically renaming the files you upload to the media library with SEO friendly names.
  * Version: 0.9.1
  * Author: Afterglow Web Agency
