@@ -1,0 +1,407 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: SEO File Names\n"
+"POT-Creation-Date: 2021-10-22 17:19+0200\n"
+"PO-Revision-Date: 2021-10-22 17:21+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2.3\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: afg-seo-file-name.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.min.js\n"
+
+#: afg-seo-file-name.php:17
+msgid ""
+"Please upgrade WordPress to version 4.9.18 or higher to use SEO File Names."
+msgstr ""
+"Veuillez mettre à niveau WordPress vers la version 4.9.18 ou supérieure pour "
+"utiliser SEO File Names."
+
+#: afg-seo-file-name.php:100
+#, php-format
+msgid "%1$sSettings%2$s"
+msgstr "%1$sRéglages%2$s"
+
+#: afg-seo-file-name.php:106
+#, php-format
+msgid "%1$sSaved time? Buy me a coffee.%2$s"
+msgstr "%1$sGain de temps ? Payez votre café.%2$s"
+
+#: inc/class.OptionPage.php:14 inc/class.OptionPage.php:15
+#: inc/class.OptionPage.php:66
+msgid "Seo File Names"
+msgstr "Noms de fichiers Seo"
+
+#: inc/class.OptionPage.php:31
+msgid "Pause the plugin?"
+msgstr "Plugin en pause ?"
+
+#: inc/class.OptionPage.php:38
+msgid "Do you want to pause the plugin?"
+msgstr "Voulez-vous mettre le plugin en pause ?"
+
+#: inc/class.OptionPage.php:46
+msgid "File names settings"
+msgstr "Paramètres des noms de fichiers"
+
+#: inc/class.OptionPage.php:66
+msgid "Plugin translated title"
+msgstr "Titre traduit du plugin"
+
+#: inc/class.OptionPage.php:121
+msgid "Do you want to pause the plugin ?"
+msgstr "Voulez-vous mettre le plugin en pause ?"
+
+#: inc/class.OptionPage.php:123
+msgid ""
+"If the plugin is active (not paused) and no file names schema is set, the "
+"following scheme will apply: "
+msgstr ""
+"Si le plug-in est actif (non mis en pause) et qu’aucun schéma de noms de "
+"fichiers n’est défini, le schéma suivant s’applique : "
+
+#: inc/class.Options.php:24
+msgid "Title"
+msgstr "Titre"
+
+#: inc/class.Options.php:25
+msgid "Current post, page or term title"
+msgstr "Titre de l’article, de la page ou du terme en cours d’édition"
+
+#: inc/class.Options.php:29
+msgid "Slug"
+msgstr "Slug"
+
+#: inc/class.Options.php:30
+msgid "Current post, page or term slug"
+msgstr "Slug de l’article, de la page ou du terme en cours d’édition"
+
+#: inc/class.Options.php:34
+msgid "Type"
+msgstr "Type"
+
+#: inc/class.Options.php:35
+msgid "Current post or page type, empty on terms"
+msgstr ""
+"Type de l’article ou de la page en cours d’édition, vide sur les termes"
+
+#: inc/class.Options.php:39
+msgid "Tag"
+msgstr "Étiquette"
+
+#: inc/class.Options.php:40
+msgid "Current post or page tag, empty on terms"
+msgstr ""
+"Étiquettes de l’article ou de la page en cours d’édition, vide sur les termes"
+
+#: inc/class.Options.php:44
+msgid "Category"
+msgstr "Catégorie"
+
+#: inc/class.Options.php:45
+msgid "Current post or page category, empty on terms"
+msgstr ""
+"Catégorie de l’article ou de la page en cours d’édition, vide sur les termes"
+
+#: inc/class.Options.php:49
+msgid "Author"
+msgstr "Auteur"
+
+#: inc/class.Options.php:50
+msgid "Current post or page author, empty on terms"
+msgstr ""
+"Auteur de l’article ou de la page en cours d’édition, vide sur les termes"
+
+#: inc/class.Options.php:54
+msgid "Taxonomy"
+msgstr "Taxonomie"
+
+#: inc/class.Options.php:55
+msgid "Current term taxonomy name"
+msgstr "Taxonomie du terme en cours d’édition"
+
+#: inc/class.Options.php:59
+msgid "Date published"
+msgstr "Date de publication"
+
+#: inc/class.Options.php:60
+msgid "Current post or page first published date, empty on terms"
+msgstr ""
+"Date de publication de l’article ou de la page en cours d’édition, vide sur "
+"les termes"
+
+#: inc/class.Options.php:64
+msgid "Date modified"
+msgstr "Date de modification"
+
+#: inc/class.Options.php:65
+msgid "Last date, current post or page as been modified, empty on terms"
+msgstr ""
+"Date de modification de l’article ou de la page en cours d’édition, vide sur "
+"les termes"
+
+#: inc/class.Options.php:69
+msgid "Site name"
+msgstr "Nom du site"
+
+#: inc/class.Options.php:70
+msgid "The site name"
+msgstr "Le nom du site"
+
+#: inc/class.Options.php:74
+msgid "Site description"
+msgstr "Description du site"
+
+#: inc/class.Options.php:75
+msgid "The site description"
+msgstr "La description du site"
+
+#: inc/class.Options.php:79
+msgid "Original filename"
+msgstr "Nom du fichier d’origine"
+
+#: inc/class.Options.php:80
+msgid ""
+"The sanitized orginal filename, usefull to keep track of your local files"
+msgstr ""
+"Le nom de fichier original nettoyé, utile pour garder la trace de vos "
+"fichiers locaux"
+
+#: template-parts/field-checkbox.php:4
+msgid "No"
+msgstr "Non"
+
+#: template-parts/field-checkbox.php:9
+msgid "Yes"
+msgstr "Oui"
+
+#: template-parts/field-schema.php:4
+msgid "Click on a tag to start building the file name schema."
+msgstr ""
+"Cliquez sur un bouton pour commencer à créer le schéma de nom de fichier."
+
+#: template-parts/field-schema.php:5 template-parts/option-page-info.php:17
+msgid "You can insert arbitrary text between each tag."
+msgstr "Vous pouvez insérer du texte arbitraire entre chaque balise."
+
+#: template-parts/field-schema.php:20
+msgid "Clear"
+msgstr "Effacer"
+
+#: template-parts/field-schema.php:22
+msgid ""
+"This filename scheme will apply to all files you upload to your website from "
+"now on."
+msgstr ""
+"Ce schéma de nom de fichier s’appliquera à tous les fichiers que vous "
+"mettrez dans la bibliothèque de média à partir de maintenant."
+
+#: template-parts/option-page-info.php:3
+msgid "Goal of Seo File Names"
+msgstr "Objectif de Seo File Names"
+
+#: template-parts/option-page-info.php:6
+msgid ""
+"Seo File Names aims to save you time and boost your SEO by automatically "
+"renaming the files you upload to the media library with SEO friendly names."
+msgstr ""
+"Seo File Names vise à vous faire gagner du temps et booster votre "
+"référencement en renommant automatiquement les fichiers que vous chargez "
+"dans la médiathèque avec des noms adaptés au référencement."
+
+#: template-parts/option-page-info.php:7
+msgid ""
+"This is often overlooked by website authors whereas search engines also rely "
+"on file names to understand and index them."
+msgstr ""
+"Ceci est souvent négligé par les auteurs de sites Web, alors que les moteurs "
+"de recherche s’appuient aussi sur les noms de fichiers pour les comprendre "
+"et les indexer."
+
+#: template-parts/option-page-info.php:8
+msgid ""
+"It also happens to me very often that clients ask me to upload many images "
+"and documents to their website. This plugin has saved me a lot of time by "
+"removing the automatic renaming software step (and license fees) before "
+"importing the files."
+msgstr ""
+"Il m’arrive aussi très souvent que des clients me demandent de mettre en "
+"ligne de nombreuses images et documents sur leur site Web. Ce plugin m’a "
+"fait gagner beaucoup de temps en supprimant l’étape de renommage automatique "
+"du logiciel (et les frais de licence) avant d’importer les fichiers."
+
+#: template-parts/option-page-info.php:11
+msgid "How does Seo File Names works?"
+msgstr "Comment fonctionne Seo File Names?"
+
+#: template-parts/option-page-info.php:14
+msgid ""
+"When you upload a file to the media library, Seo File Names gathers datas "
+"from the post, page or term you are currently editing: <b>title, slug, "
+"category, tag or taxonomy, type, dates, author...</b>"
+msgstr ""
+"Lorsque vous mettez un fichier dans la bibliothèque de média, le plugin "
+"rassemble des données à partir de l’article, de la page ou du terme que vous "
+"êtes en train d’éditer : <b>titre, slug, catégorie, étiquette ou taxonomie, "
+"type, dates, auteur...</b>"
+
+#: template-parts/option-page-info.php:15
+msgid ""
+"...plus the global site datas: <b>site name and site description</b>, useful "
+"to reinforce your brand."
+msgstr ""
+"...plus les données globales du site : <b>nom du site et description du "
+"site</b>, utiles pour renforcer votre marque."
+
+#: template-parts/option-page-info.php:16
+msgid "With this datas, you build the file names using the predefined tags."
+msgstr ""
+"Avec ces données, vous <b>construisez les noms des fichiers</b> à l’aide des "
+"balises prédéfinies."
+
+#: template-parts/option-page-info.php:18
+msgid ""
+"The arbitrary text can only contain the characters [a-z], [0-9], space and "
+"'-'."
+msgstr ""
+"Le texte arbitraire ne peut contenir que les caractères [a-z], [0-9], espace "
+"et '-'."
+
+#: template-parts/option-page-info.php:19
+msgid ""
+"Special characters, accented characters and capital letters will be filtered "
+"out."
+msgstr ""
+"Les caractères spéciaux, les caractères accentués et les lettres majuscules "
+"seront filtrés."
+
+#: template-parts/option-page-info.php:20
+msgid ""
+"Each part of the file name will be separated from the others by dashes if "
+"they are not."
+msgstr ""
+"Chaque partie du nom de fichier sera séparée des autres par des tirets."
+
+#: template-parts/option-page-info.php:22
+msgid ""
+"Seo File Names works best when adding files to the media library while "
+"editing articles, pages or terms, as it uses the datas being edited."
+msgstr ""
+"Seo File Names fonctionne mieux en ajoutant des fichiers à la médiathèque "
+"pendant l’édition d’articles, de pages ou de termes car il utilise les "
+"données en cours de modification."
+
+#: template-parts/option-page-support.php:5
+msgid "Does this plugin save you time?"
+msgstr "Ce plugin vous fait-il gagner du temps ?"
+
+#: template-parts/option-page-support.php:6
+msgid "Buy me a coffee so I can continue to improve Seo File Names."
+msgstr ""
+"Payez votre café pour que je puisse continuer à améliorer Seo File Names."
+
+#: template-parts/option-page-support.php:9
+msgid "Donate with PayPal button"
+msgstr "Faire un don avec PayPal bouton"
+
+#: template-parts/option-page-support.php:9
+msgid "Donate"
+msgstr "Donner"
+
+#: template-parts/option-page-support.php:10
+msgid "Donate through PayPal"
+msgstr "Faites un don par PayPal"
+
+#: template-parts/option-page-support.php:14
+msgid "Cool features coming soon:"
+msgstr "Fonctionnalités à venir bientôt :"
+
+#: template-parts/option-page-support.php:16
+msgid ""
+"On-the-fly renaming of tag values, useful for types and taxonomies "
+"particularly."
+msgstr ""
+"Renommage à la volée des valeurs des balises, utile pour les types et les "
+"taxonomies en particulier."
+
+#: template-parts/option-page-support.php:17
+msgid "Dates and hours schemes options"
+msgstr "Options de schémas de dates et d’heures"
+
+#: template-parts/option-page-support.php:18
+msgid "Custom taxonomies"
+msgstr "Taxonomies personnalisées"
+
+#: template-parts/option-page-support.php:20
+msgid "Suggest a new feature"
+msgstr "Suggérer une nouvelle fonctionnalité"
+
+#. Plugin Name of the plugin/theme
+msgid "SEO File Names"
+msgstr "Noms de fichiers Seo"
+
+#. Plugin URI of the plugin/theme
+#. Author URI of the plugin/theme
+msgid "https://afterglow-web.agency"
+msgstr "https://afterglow-web.agency"
+
+#. Description of the plugin/theme
+msgid "Automatically rename files on upload with custom pattern."
+msgstr ""
+"Renomme automatiquement les fichiers avec votre schéma SEO personnalisé "
+"lorsque vous les ajoutez à la médiathèque."
+
+#. Author of the plugin/theme
+msgid "Afterglow Web Agency"
+msgstr "Afterglow Web Agency"
+
+#~ msgid "AFG SEO File Name Filter"
+#~ msgstr "AFG Noms de fichier SEO "
+
+#~ msgid "Global plugin settings"
+#~ msgstr "Paramètres globaux du plug-in"
+
+#~ msgid "Current post or page tag, empty on terms as tag"
+#~ msgstr ""
+#~ "Étiquette de l’article ou de la page en cours d’édition, vide sur les "
+#~ "termes"
+
+#~ msgid "The date the current post, page or term as been published"
+#~ msgstr ""
+#~ "La date à laquelle l’article, la page ou le terme en cours d’édtion a été "
+#~ "publié"
+
+#~ msgid "The last date the current post, page or term as been modified"
+#~ msgstr ""
+#~ "La dernière date à laquelle l’article, la page ou le terme en cours "
+#~ "d’édition a été modifié"
+
+#~ msgid ""
+#~ "You can define specific schemes per post type below that will override "
+#~ "the global rule when applicable."
+#~ msgstr ""
+#~ "Vous pouvez définir ci-dessous des schémas spécifiques par type de "
+#~ "publication qui remplaceront la règle globale le cas échéant."
+
+#~ msgid "Purpose of Seo File Name plugin"
+#~ msgstr "But du plugin Seo File Name"
+
+#~ msgid ""
+#~ "Arbitrary text can only contain [a-z], [0-9] and '-' characters, it will "
+#~ "therefore be filtered (no space, underscore, special characters or "
+#~ "uppercase allowed)."
+#~ msgstr ""
+#~ "Le texte arbitraire ne peut contenir que des caractères [a-z], [0-9], "
+#~ "espace et '-', il sera donc filtré (pas de caractères spéciaux, accentués "
+#~ "ou de majuscules)."
