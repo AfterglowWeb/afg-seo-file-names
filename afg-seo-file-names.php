@@ -200,8 +200,9 @@ function asf_saveMeta() {
         }
     }
     if(isset($_POST['asf_datas'])) {
-        $array = $_POST['asf_datas'];
-        $array = json_decode(str_replace('\\', '', $array));
+        $string = $_POST['asf_datas'];
+        $string = htmlspecialchars($string,ENT_NOQUOTES);
+        $array = json_decode(str_replace('\\', '', $string));
         $options['datas'] = $array;
         update_option('asf_tmp_options',$options);
         wp_die();
