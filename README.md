@@ -57,5 +57,8 @@ https://github.com/AfterglowWeb/afg-seo-file-names/
 
 ## Changelog
 
+### 0.9.2
+Datas without saving : full support for classic editor.
+
 ### 0.9.1
 First public realease.

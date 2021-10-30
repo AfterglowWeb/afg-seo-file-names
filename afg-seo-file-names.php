@@ -11,7 +11,7 @@
  * Plugin Name: SEO File Names
  * Plugin URI: https://afterglow-web.agency/en/seo-file-names/
  * Description: Seo File Names aims to save you time and boost your SEO by automatically renaming the files you upload to the media library with SEO friendly names.
- * Version: 0.9.1
+ * Version: 0.9.2
  * Author: Afterglow Web Agency
  * Author URI: https://afterglow-web.agency
  * Requires at least: 4.9.18
@@ -31,13 +31,14 @@ if(version_compare(get_bloginfo('version'),'4.9.18', '<') ) {
 
 define( 'AFG_ASF_PATH', plugin_dir_path( __FILE__ )  );
 define( 'AFG_ASF_URL', plugin_dir_url( __FILE__ ) );
-define( 'AFG_ASF_VERSION', '0.9.1' );
+define( 'AFG_ASF_VERSION', '0.9.2' );
 define( 'AFG_IS_ASF', isset($_GET['page']) && strpos($_GET['page'], 'asf-') == 0 ? true : false);
 
 add_action( 'plugins_loaded', 'asf_init' );
 add_action( 'init', 'asf_loadDomain' );
 add_action( 'admin_enqueue_scripts', 'asf_adminStyle');
 add_action( 'admin_enqueue_scripts', 'asf_clearUserVals');
+add_action( 'admin_enqueue_scripts', 'asf_classicEditorScript');
 
 add_action( 'plugins_loaded', 'asf_saveTagId' );
 add_filter( 'wp_unique_post_slug', 'asf_preGetslug', 6, 10);
@@ -84,13 +85,12 @@ function asf_loadDomain() {
 */ 
 function asf_adminStyle() {
     if(!AFG_IS_ASF) return;
-    $version = rand();
-    //$version = AFG_ASF_VERSION;
+    $version = AFG_ASF_VERSION;
     wp_enqueue_style('asf-admin', AFG_ASF_URL.'assets/css/admin.css', array(), $version, 'all');
     wp_enqueue_script( 'asf-admin', AFG_ASF_URL . 'assets/js/admin.js', array('jquery','jquery-ui-accordion'), $version, 'all' );
-    wp_localize_script( 'asf-admin', 'afgAjax', array(
+    wp_localize_script( 'asf-admin', 'asfAjax', array(
         'ajaxurl'=> admin_url( 'admin-ajax.php' ),
-        'ajax_nonce' => wp_create_nonce('asf-admin-scripts'),
+        'nonce' => wp_create_nonce('ajax-admin-nonce'),
     ));
 }
 
@@ -167,7 +167,7 @@ function asf_saveTagId() {
 /**
  * Get Slug as soon as it exists
  * @hooks on 'wp_unique_post_slug'
- * @since 0.0.9
+ * @since 0.9.0
  */
 function asf_preGetslug($slug, $postId, $postStatus, $postType, $postParent, $originalSlug) {
     update_option('asf_tmp_post',$postId);
@@ -177,10 +177,10 @@ function asf_preGetslug($slug, $postId, $postStatus, $postType, $postParent, $or
 /**
  * Load Gutenberg Script
  * @hooks on 'enqueue_block_editor_assets'
- * @since 0.0.9
+ * @since 0.9.0
  */
 function asf_GutenbergScript() {
-    $version = rand();
+    $version = AFG_ASF_VERSION;
     wp_enqueue_script( 'asf-gutenberg', AFG_ASF_URL . 'assets/js/gutenberg.js', array('wp-blocks'), $version, 'all');
     wp_localize_script( 'asf-gutenberg', 'asfAjax', array(
         'ajaxurl'=> admin_url( 'admin-ajax.php' ),
@@ -189,9 +189,24 @@ function asf_GutenbergScript() {
 }
 
 /**
+ * Load Classic Editor Script
+ * @hooks on 'admin_enqueue_scripts'
+ * @since 0.9.2
+ */
+function asf_classicEditorScript() {
+    if(asf_isGutenbergEditor()) return;
+    $version = AFG_ASF_VERSION;
+    wp_enqueue_script( 'asf-classic-editor', AFG_ASF_URL . 'assets/js/classic-editor.js', array('jquery'), $version, 'all' );
+    wp_localize_script( 'asf-classic-editor', 'asfAjax', array(
+        'ajaxurl'=> admin_url( 'admin-ajax.php' ),
+        'nonce' => wp_create_nonce('ajax-nonce'),
+    ));
+}
+
+/**
  * Ajax save latest post datas
  * @hooks on 'wp_ajax_asf_save_meta'
- * @since 0.0.9
+ * @since 0.9.0
  */
 function asf_saveMeta() {
     if(isset($_POST['asf_nonce'])) {
@@ -211,7 +226,7 @@ function asf_saveMeta() {
 
 /**
 * Check if current page is using Guntenberg
-* @since 0.0.9
+* @since 0.9.0
 */
 function asf_isGutenbergEditor() {
     if( function_exists( 'is_gutenberg_page' ) && is_gutenberg_page() ) return true;

@@ -224,6 +224,8 @@ class asf_FileName {
     } 
 
     private function getTermSlug($termId) {
+        if(is_string($termId) && !preg_match('/\d+$/', $termId)) return sanitize_title($termId);
+        
         $termIds = is_array($termId) ? $termId : array($termId);
         $term = get_term($termIds[0]);
         if (!is_a($term, 'WP_Term')) return false;
