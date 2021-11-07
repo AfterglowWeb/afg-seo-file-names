@@ -36,11 +36,12 @@ class asf_FileName {
     private function fileName() {
         $userOptions = $this->_userOptions;
         $options = $this->fillOptions();
+        if(!$options) return false;
         $fileName = false;
         
         if( isset($userOptions['default_schema']) && !empty($userOptions['default_schema']) && $options ) {
             $fileName = $this->replaceTags($options, $userOptions['default_schema']);
-        } elseif( $options ) {
+        } else {
             $fileName = $this->replaceTags($options, $options['options']['default_schema']);
         }
 
@@ -119,13 +120,13 @@ class asf_FileName {
             
             switch($key) {
                 case 'title' :
-                    $options['tags'][$key]['value'] = $value ? $value : $this->getTheTitle($postId);
+                    $options['tags'][$key]['value'] = $value ? sanitize_title($value) : $this->getTheTitle($postId);
                 break;
                 case 'slug' :
-                    $options['tags'][$key]['value'] = $value ? $value : $this->getSlug($postId);
+                    $options['tags'][$key]['value'] = $value ? sanitize_title($value) : $this->getSlug($postId);
                 break;
                 case 'type' :
-                    $options['tags'][$key]['value'] = $this->getPostType($postId);
+                    $options['tags'][$key]['value'] = $value ? sanitize_title($value) : $this->getPostType($postId);
                 break;
                 case 'tag' :
                     $options['tags'][$key]['value'] = $value ? $this->getTermSlug($value) : $this->getFirstTag($postId);

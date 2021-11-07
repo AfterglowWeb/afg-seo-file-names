@@ -11,7 +11,7 @@
  * Plugin Name: SEO File Names
  * Plugin URI: https://afterglow-web.agency/en/seo-file-names/
  * Description: Seo File Names aims to save you time and boost your SEO by automatically renaming the files you upload to the media library with SEO friendly names.
- * Version: 0.9.2
+ * Version: 0.9.21
  * Author: Afterglow Web Agency
  * Author URI: https://afterglow-web.agency
  * Requires at least: 4.9.18
@@ -31,26 +31,29 @@ if(version_compare(get_bloginfo('version'),'4.9.18', '<') ) {
 
 define( 'AFG_ASF_PATH', plugin_dir_path( __FILE__ )  );
 define( 'AFG_ASF_URL', plugin_dir_url( __FILE__ ) );
-define( 'AFG_ASF_VERSION', '0.9.2' );
+define( 'AFG_ASF_VERSION', '0.9.21' );
 define( 'AFG_IS_ASF', isset($_GET['page']) && strpos($_GET['page'], 'asf-') == 0 ? true : false);
+
+
 
 add_action( 'plugins_loaded', 'asf_init' );
 add_action( 'init', 'asf_loadDomain' );
 add_action( 'admin_enqueue_scripts', 'asf_adminStyle');
 add_action( 'admin_enqueue_scripts', 'asf_clearUserVals');
-add_action( 'admin_enqueue_scripts', 'asf_classicEditorScript');
-
-add_action( 'plugins_loaded', 'asf_saveTagId' );
-add_filter( 'wp_unique_post_slug', 'asf_preGetslug', 6, 10);
 
 add_action( 'in_admin_header', 'asf_notices', 1000);
 add_filter( 'network_admin_plugin_action_links_'.plugin_basename(__FILE__), 'asf_pluginLinks' );
 add_filter( 'plugin_action_links_'.plugin_basename(__FILE__), 'asf_pluginLinks' );
 
+add_action( 'wp_ajax_asf_save_meta', 'asf_saveMeta' );
+
+add_action( 'admin_enqueue_scripts', 'asf_classicEditorScript');
+add_action( 'plugins_loaded', 'asf_saveTagId' );
+add_filter( 'wp_unique_post_slug', 'asf_preGetslug', 6, 10);
+
 add_filter( 'wp_handle_upload_prefilter', 'asf_rewriteFileName');
 
 add_action( 'enqueue_block_editor_assets', 'asf_GutenbergScript' );
-add_action( 'wp_ajax_asf_save_meta', 'asf_saveMeta' );
 
 
 /**
@@ -201,6 +204,7 @@ function asf_classicEditorScript() {
         'ajaxurl'=> admin_url( 'admin-ajax.php' ),
         'nonce' => wp_create_nonce('ajax-nonce'),
     ));
+
 }
 
 /**
@@ -236,4 +240,3 @@ function asf_isGutenbergEditor() {
     if ( method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) return true;
     return false;
 }
-

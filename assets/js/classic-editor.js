@@ -1,5 +1,7 @@
 jQuery(document).ready(function($) {
-	
+
+	if($('#post_tag').length == 0) return;
+
 	asf_tagChanges();
 	const datas = {
 	    	'title':'',
@@ -7,6 +9,7 @@ jQuery(document).ready(function($) {
 	 		'cats': new Array(),
 	 		'tags': new Array(),
 	 		'author':'',
+	 		'type':'',
 	};
 
 	/**
@@ -90,9 +93,18 @@ jQuery(document).ready(function($) {
 		datas.author = $(this).val();
 	});
 
-	console.log(datas);
+	/**
+	* Post Type
+	*/
+	var postType = $('#post_type');
+	if(postType.val()) {
+		datas.type = postType.val();
+	} 
 
 
+	window.onfocus = function() { 
+	    asf_ajax(datas);
+	};
 
 	function asf_ajax($datas) {
 		$.ajax({
@@ -131,7 +143,6 @@ function asf_tagChanges() {
 		let event = new Event("tag-changed", {bubbles: true}); // (2)
 	    for(var mutation of mutationsList) {
 	        if (mutation.type == 'childList') {
-	            console.log('Un noeud enfant a été ajouté ou supprimé.');
 	            targetNode.dispatchEvent(event);
 	        }
 	    }

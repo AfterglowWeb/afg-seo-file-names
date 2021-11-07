@@ -4,12 +4,14 @@ const getPostSlug = () => wp.data.select('core/editor').getEditedPostAttribute( 
 const getPostCat = () => wp.data.select('core/editor').getEditedPostAttribute('categories');
 const getPostTag = () => wp.data.select('core/editor').getEditedPostAttribute('tags');
 const getPostAuthor = () => wp.data.select('core/editor').getEditedPostAttribute('author');
+const getPostType = () => wp.data.select('core/editor').getEditedPostAttribute('type');
 
 let title = getPostTitle();
 let slug = getPostSlug();
 let cat = getPostCat();
 let tag = getPostTag();
 let author = getPostAuthor();
+let type = getPostType();
 
 const datas = {
     	'title':title,
@@ -17,8 +19,13 @@ const datas = {
  		'cat':cat,
  		'tag':tag,
  		'author':author,
+        'type':type,
     };
 asf_ajax(datas);
+
+window.onfocus = function() { 
+    asf_ajax(datas);
+};
 
 wp.data.subscribe(() => {
 
@@ -57,10 +64,18 @@ wp.data.subscribe(() => {
     }
     author = newAuthor;
 
+    const newType = getPostType();    
+    if( type !== newType ) {
+        datas.type = newType;
+        asf_ajax(datas);
+    }
+    type = newType;
+
 });
 
 
 function asf_ajax(datas) {
+    
 	ajaxFromJq({
             type : 'POST',
             url : asfAjax.ajaxurl,
