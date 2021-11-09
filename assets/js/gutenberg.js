@@ -1,77 +1,81 @@
 
+const getPostId = () => wp.data.select('core/editor').getCurrentPostId();
 const getPostTitle = () => wp.data.select('core/editor').getEditedPostAttribute('title');
-const getPostSlug = () => wp.data.select('core/editor').getEditedPostAttribute( 'slug' );
+const getPostSlug = () => wp.data.select('core/editor').getEditedPostSlug();
 const getPostCat = () => wp.data.select('core/editor').getEditedPostAttribute('categories');
 const getPostTag = () => wp.data.select('core/editor').getEditedPostAttribute('tags');
-const getPostAuthor = () => wp.data.select('core/editor').getEditedPostAttribute('author');
 const getPostType = () => wp.data.select('core/editor').getEditedPostAttribute('type');
 
+let postId = getPostId();
 let title = getPostTitle();
 let slug = getPostSlug();
 let cat = getPostCat();
 let tag = getPostTag();
-let author = getPostAuthor();
 let type = getPostType();
 
 const datas = {
+        'id': postId,
     	'title':title,
  		'slug':slug,
  		'cat':cat,
  		'tag':tag,
- 		'author':author,
         'type':type,
     };
+
+wp.data.subscribe(() => {
+    setDatas();
+});
+
 asf_ajax(datas);
 
 window.onfocus = function() { 
     asf_ajax(datas);
 };
 
-wp.data.subscribe(() => {
+function setDatas() {
+
+    const newPostId = getPostId();    
+    if( postId !== newPostId && Number.isInteger(parseInt(newPostId, 10)) ) {
+        datas.id = parseInt(newPostId, 10);
+        asf_ajax(datas);
+    }
+    postId = newPostId;
 
     const newTitle = getPostTitle();    
-    if( title !== newTitle ) {
-    	datas.title = newTitle;
-    	asf_ajax(datas);
+    if( title !== newTitle && newTitle.trim() != '' ) {
+        datas.title = newTitle;
+        asf_ajax(datas);
     }
     title = newTitle;
 
     const newSlug = getPostSlug();    
-    if( slug !== newSlug ) {
-    	datas.slug = newSlug;
-    	asf_ajax(datas);
+    if( slug !== newSlug && newSlug.trim() != '' ) {
+        datas.slug = newSlug;
+        asf_ajax(datas);
     }
     slug = newSlug;
 
     const newCat = getPostCat();    
-    if( cat !== newCat ) {
-    	datas.cat = newCat;
-    	asf_ajax(datas);
+    if( cat !== newCat && Array.isArray(newCat) ) {
+        datas.cat = newCat;
+        asf_ajax(datas);
     }
     cat = newCat;
 
     const newTag = getPostTag();    
-    if( tag !== newTag ) {
-    	datas.tag = newTag;
-    	asf_ajax(datas);
+    if( tag !== newTag && Array.isArray(newTag) ) {
+        datas.tag = newTag;
+        asf_ajax(datas);
     }
     tag = newTag;
 
-    const newAuthor = getPostAuthor();    
-    if( author !== newAuthor ) {
-    	datas.author = newAuthor;
-    	asf_ajax(datas);
-    }
-    author = newAuthor;
-
     const newType = getPostType();    
-    if( type !== newType ) {
+    if( type !== newType && newType.trim() != '' ) {
         datas.type = newType;
         asf_ajax(datas);
     }
     type = newType;
-
-});
+}
 
 
 function asf_ajax(datas) {
@@ -85,7 +89,7 @@ function asf_ajax(datas) {
                 asf_nonce: asfAjax.nonce,
             },
             success: function(response) {
-               
+               //console.log(response);
             },
             error : function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR + " :: " + textStatus + " :: " + errorThrown);

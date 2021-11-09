@@ -10,8 +10,8 @@
  * @wordpress-plugin
  * Plugin Name: SEO File Names
  * Plugin URI: https://afterglow-web.agency/en/seo-file-names/
- * Description: Seo File Names aims to save you time and boost your SEO by automatically renaming the files you upload to the media library with SEO friendly names.
- * Version: 0.9.21
+ * Description: SEO File Names aims to save you time and boost your SEO by automatically renaming the files you upload to the media library with SEO friendly names.
+ * Version: 0.9.3
  * Author: Afterglow Web Agency
  * Author URI: https://afterglow-web.agency
  * Requires at least: 4.9.18
@@ -31,7 +31,7 @@ if(version_compare(get_bloginfo('version'),'4.9.18', '<') ) {
 
 define( 'AFG_ASF_PATH', plugin_dir_path( __FILE__ )  );
 define( 'AFG_ASF_URL', plugin_dir_url( __FILE__ ) );
-define( 'AFG_ASF_VERSION', '0.9.21' );
+define( 'AFG_ASF_VERSION', '0.9.3' );
 define( 'AFG_IS_ASF', isset($_GET['page']) && strpos($_GET['page'], 'asf-') == 0 ? true : false);
 
 
@@ -62,14 +62,10 @@ add_action( 'enqueue_block_editor_assets', 'asf_GutenbergScript' );
  * @since 0.9.0
  */
 function asf_init() {
-    $path = AFG_ASF_PATH . 'inc/';
-    require_once $path.'class.Options.php';
-    foreach ( glob( $path."*.php" ) as $file ) {
-        if($file !== 'class.Options.php' ) {
-            require_once $file;
-        }
-    }
-     
+    require_once realpath(AFG_ASF_PATH . 'inc/class.Sanitize.php');
+    require_once realpath(AFG_ASF_PATH . 'inc/class.Options.php');
+    require_once realpath(AFG_ASF_PATH . 'inc/class.OptionPage.php');
+    require_once realpath(AFG_ASF_PATH . 'inc/class.FileName.php');      
 }
 
 /**
@@ -118,13 +114,13 @@ function asf_pluginLinks($links): array {
         array_unshift(
             $links,
             sprintf(
-                __( '%1$sSettings%2$s', 'asf' ),
+                esc_html(__( '%1$sSettings%2$s', 'asf' )),
                 '<a href="' . menu_page_url( 'asf-settings', false ) . '">',
                 '</a>'
             )
         );
         $links[] = sprintf(
-            __( '%1$sSaved time? Buy me a coffee.%2$s', 'asf' ),
+            esc_html(__( '%1$sSaved time? Buy me a coffee.%2$s', 'asf' )),
             '<a href="https://www.paypal.com/biz/fund?id=6WVXD3SYG3L58" target="_blank">',
             '</a>'
         );
@@ -156,12 +152,18 @@ function asf_rewriteFileName($file) {
 /**
  * Save in DB for 'wp_handle_upload_prefilter' event
  * @hooks on 'plugins_loaded'
- * @since 0.0.9
+ * @since 0.9.0
  */
 function asf_saveTagId() {
-    if(isset($_GET['tag_ID'])) {
-        if($term = get_term($_GET['tag_ID'])) {
-            $id = $term->term_id;
+    if(isset($_GET['tag_ID']) && !empty($_GET['tag_ID'])) {
+        
+        $sanitize = new asf_Sanitize;
+        $tagId = $sanitize->sanitizeId($_GET['tag_ID']);
+        if(!$tagId) return false;
+
+        $term = get_term($tagId);
+        if (is_a($term, 'WP_Term')) {
+            $id = $sanitize->sanitizeTermId($term);
             update_option('asf_tmp_term',$id);
         }
     }
@@ -173,6 +175,9 @@ function asf_saveTagId() {
  * @since 0.9.0
  */
 function asf_preGetslug($slug, $postId, $postStatus, $postType, $postParent, $originalSlug) {
+
+    $sanitize = new asf_Sanitize;
+    $postId = $sanitize->sanitizeId($postId);
     update_option('asf_tmp_post',$postId);
     return $slug;
 }
@@ -219,13 +224,25 @@ function asf_saveMeta() {
         }
     }
     if(isset($_POST['asf_datas'])) {
-        $string = $_POST['asf_datas'];
-        $string = htmlspecialchars($string,ENT_NOQUOTES);
-        $array = json_decode(str_replace('\\', '', $string));
-        $options['datas'] = $array;
+        
+        $options = new asf_options;
+        $options = $options->getOptions();
+        
+        if(!isset($options['datas']) && is_array(!$options['datas'])) wp_die();
+        
+        $string = htmlspecialchars($_POST['asf_datas'],ENT_NOQUOTES);
+        $datas = json_decode(str_replace('\\', '', $string),true);
+        if(!is_array($datas)) wp_die();
+        
+        $sanitize = new asf_Sanitize;
+
+        $datas = $sanitize->sanitizeTmpDatas($options,$datas);
+        $options['datas'] = $datas;
         update_option('asf_tmp_options',$options);
+
         wp_die();
     }
+    wp_die();
 }
 
 /**
@@ -240,3 +257,5 @@ function asf_isGutenbergEditor() {
     if ( method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) return true;
     return false;
 }
+
+

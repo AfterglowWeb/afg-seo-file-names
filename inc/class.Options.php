@@ -81,6 +81,14 @@ class asf_options {
                     'value'  => '', 
                 ),
             );
-            $this->_options['datas'] = array();
+            $this->_options['datas'] = array(
+                    'id'=> 'id',
+                    'title' => 'string',
+                    'slug' => 'string',
+                    'cat' => 'ids',
+                    'tag' => 'ids',
+                    'author' => 'id',
+                    'type' => 'string',
+            );
         }
 }

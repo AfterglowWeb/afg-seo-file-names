@@ -7,7 +7,7 @@ Seo File Names is a Wordpress plugin. It aims to save you time and boost your SE
 * Tags: seo, filename, filenames, file, files, name, names, medialibrary, media, library, editor, gutenberg
 * Requires at least: WordPress 4.9.18
 * Tested up to: WordPress 5.8.1
-* Stable tag: 0.9.21
+* Stable tag: 0.9.3
 * Requires PHP: 5.2.4
 * License: GPLv2 or later
 * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -56,6 +56,10 @@ https://github.com/AfterglowWeb/afg-seo-file-names/
 * If you are interested in further collaboration, just [leave me a message on this page](https://afterglow-web.agency "Création de site web à Nice").
 
 ## Changelog
+
+### 0.9.3
+Major security fixes after 1st WordPress Plugin Directory team review.
+Class asf_Sanitize added.
 
 ### 0.9.21
 Bug fix on multiple tabs opened.

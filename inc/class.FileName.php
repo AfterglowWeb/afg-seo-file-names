@@ -4,42 +4,51 @@ defined( 'ABSPATH' ) || exit;
 
 if(class_exists('asf_FileName')) return;
 
+/**
+* Filename rewrite
+* @since 0.9.0
+*/
 class asf_FileName {
 
     private $_originalFilename;
-    private $_postId;
-    private $_userVals;
-    private $_userOptions;
+    private $_sanitize;
 
     public function __construct() {
-        $this->_postId = $this->getCurrentId();
-        $this->_userVals = $this->getUserValues();
-        $this->_userOptions = $this->getUserOptions();
+        $this->_sanitize = new asf_Sanitize;
     } 
 
+    /**
+    * Rewrite file name
+    * @since 0.9.0
+    */
     public function rewriteFileName($file) {
 
-        $userOptions = $this->_userOptions;
-        if(isset($userOptions['is_paused'])) return $file;
+        $userOptions = $this->getUserOptions();
 
-        $this->_originalFilename = pathinfo($file['name'], PATHINFO_FILENAME);
-        $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+        if($userOptions && isset($userOptions['is_paused']) && $userOptions['is_paused'] == '1') return $file;
 
-        $name = $this->fileName();
+        $fileName = sanitize_file_name($file['name']);
+        $this->_originalFilename = pathinfo($fileName, PATHINFO_FILENAME);
+        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
+
+        $name = $this->fileName($userOptions);
         if(!$name) return $file;
 
-        $file['name'] = $name.'.'.$ext;
+        $file['name'] = sanitize_file_name($name.'.'.$ext);
 
         return $file;
     }
 
-    private function fileName() {
-        $userOptions = $this->_userOptions;
+    /**
+    * Filename merge Options and Tags
+    * @since 0.9.0
+    */
+    private function fileName($userOptions = false) {
         $options = $this->fillOptions();
         if(!$options) return false;
         $fileName = false;
         
-        if( isset($userOptions['default_schema']) && !empty($userOptions['default_schema']) && $options ) {
+        if( $userOptions && isset($userOptions['default_schema']) && !empty($userOptions['default_schema']) ) {
             $fileName = $this->replaceTags($options, $userOptions['default_schema']);
         } else {
             $fileName = $this->replaceTags($options, $options['options']['default_schema']);
@@ -48,6 +57,10 @@ class asf_FileName {
         return $fileName;
     }
 
+    /**
+    * Replace Tags
+    * @since 0.9.0
+    */
     private function replaceTags($options, $schema) {
         $fileName = false;
         if( isset($options['tags']) && !empty($options['tags'])) {
@@ -67,103 +80,160 @@ class asf_FileName {
         return $fileName;
     }
 
+    /**
+    * Get current id
+    * @since 0.9.0
+    */
     private function getCurrentId() {
         $id = false;
         if(isset($_POST['post_id'])) {
-            if($post = get_post($_POST['post_id'])) {
+            $postId = $this->_sanitize->sanitizeId($_POST['post_id']);
+            if($post = get_post($postId)) {
                 $id = $post->ID;
-                update_option('asf_tmp_term',false);
+                update_option('asf_tmp_post',false);
             }     
         }
         if(isset($_GET['tag_ID'])) {
-            if($term = get_term($_GET['tag_ID'])) {
+            $tagId = $this->_sanitize->sanitizeId($_GET['tag_ID']);
+            if($term = get_term($tagId)) {
                 $id = $term->term_id;
                 update_option('asf_tmp_term',false);
             }
         }
 
         if(get_option('asf_tmp_term') != false) {
-            $id = get_option('asf_tmp_term');
+            $id = $this->_sanitize->sanitizeId(get_option('asf_tmp_term'));
             update_option('asf_tmp_term',false);
         }
 
 
         if(get_option('asf_tmp_post') !== false) {
-            $id = get_option('asf_tmp_post');
+            $id = $this->_sanitize->sanitizeId(get_option('asf_tmp_post'));
             update_option('asf_tmp_post',false);
         }
 
         return $id;
     }
 
-    private function getUserValues() {
-        $userValues = get_option('asf_tmp_options');
-        return $userValues;
-    }
-
-    private function getUserOptions() {
-        return get_option('asf_options');
-    }
-
+    /**
+    * Fill Options
+    * @since 0.9.0
+    */
     private function fillOptions() {
-        $postId = $this->_postId;
-        $userValues = $this->_userVals;
-        $userDatas = $this->getUserDatas($userValues);
-        $options = new asf_options;
-        $options = $options->getOptions();
+        
+        $options = $this->getOptions();
+        $userDatas = $this->getUserDatas($options);
         
         if( !isset($options['tags']) && !is_array($options['tags']) ) return false;
         
+        $options = $this->fillUserOptions($options, $userDatas);
+        $options = $this->fillGlobalOptions($options);
+        return $options;
+    }
+
+    /**
+    * Fill User Options
+    * @since 0.9.3
+    */
+    private function fillUserOptions($options, $userDatas) {
+        $postId = $this->getCurrentId();
+        $postId = !$postId && $userDatas['id'] ? $userDatas['id'] : false;
         foreach ($options['tags'] as $key => $array) {
             
-            $value = $userDatas && property_exists($userDatas,$key) && !empty($userDatas->$key) ? $userDatas->$key : false;
-            
+            $value = $userDatas && is_array($userDatas) && array_key_exists($key, $userDatas) && !empty($userDatas[$key]) && $userDatas[$key] != false ? $userDatas[$key] : false;
+
+            if(!$value && !$postId) continue;
+                
+                switch($key) {
+                    case 'title' :
+                        $options['tags'][$key]['value'] = $value ? $value : $this->getTheTitle($postId);
+                    break;
+                    case 'slug' :
+                        $options['tags'][$key]['value'] = $value ? $value : $this->getSlug($postId);
+                    break;
+                    case 'type' :
+                        $options['tags'][$key]['value'] = $value ? $value : $this->getPostType($postId);
+                    break;
+                    case 'tag' :
+                        $options['tags'][$key]['value'] = $value ? $this->getTermSlug($value) : $this->getFirstTag($postId);
+                    break;
+                    case 'cat' :
+                        $options['tags'][$key]['value'] = $value ? $this->getTermSlug($value) : $this->getFirstCat($postId);
+                    break;
+                    case 'author' :
+                        $options['tags'][$key]['value'] = $this->getAuthor($postId);
+                    break;
+                    case 'taxonomy' :
+                        $options['tags'][$key]['value'] = $this->getTaxonomyName($postId);
+                    break;
+                    case 'datepublished' :
+                        $options['tags'][$key]['value'] = $this->getDatePublished($postId);
+                    break;
+                    case 'datemodified'  :
+                        $options['tags'][$key]['value'] = $this->getDateModified($postId);
+                    break;
+                } 
+        }
+
+        return $options;
+    }
+
+    /**
+    * Fill Global Options
+    * @since 0.9.3
+    */
+    private function fillGlobalOptions($options) {
+        
+        foreach ($options['tags'] as $key => $array) {
+    
             switch($key) {
-                case 'title' :
-                    $options['tags'][$key]['value'] = $value ? sanitize_title($value) : $this->getTheTitle($postId);
-                break;
-                case 'slug' :
-                    $options['tags'][$key]['value'] = $value ? sanitize_title($value) : $this->getSlug($postId);
-                break;
-                case 'type' :
-                    $options['tags'][$key]['value'] = $value ? sanitize_title($value) : $this->getPostType($postId);
-                break;
-                case 'tag' :
-                    $options['tags'][$key]['value'] = $value ? $this->getTermSlug($value) : $this->getFirstTag($postId);
-                break;
-                case 'cat' :
-                    $options['tags'][$key]['value'] = $value ? $this->getTermSlug($value) : $this->getFirstCat($postId);
-                break;
-                case 'author' :
-                    $options['tags'][$key]['value'] = $value ? $this->getAuthorName($value) : $this->getAuthor($postId);
-                break;
-                case 'taxonomy' :
-                    $options['tags'][$key]['value'] = $this->getTaxonomyName($postId);
-                break;
-                case 'datepublished' :
-                    $options['tags'][$key]['value'] = $this->getDatePublished($postId);
-                break;
-                case 'datemodified'  :
-                    $options['tags'][$key]['value'] = $this->getDateModified($postId);
-                break;
                 case 'blogname' :
-                    $options['tags'][$key]['value'] = sanitize_title(get_bloginfo('name'));
+                $options['tags'][$key]['value'] = sanitize_title(sanitize_option('blogname',get_bloginfo('name')));
                 break;
                 case 'blogdesc' :
-                    $options['tags'][$key]['value'] = sanitize_title(get_bloginfo('description'));
+                    $options['tags'][$key]['value'] = sanitize_title(sanitize_option('blogdescription',get_bloginfo('description')));
                 break;
                 case 'filename' :
                     $options['tags'][$key]['value'] = sanitize_title($this->_originalFilename);
                 break;
             } 
         }
-        return $options;
-    } 
 
-    private function getUserDatas($userValues) {
-        return isset($userValues['datas']) && !empty($userValues['datas']) && is_object($userValues['datas']) ? $userValues['datas'] : false;
+        return $options;
     }
 
+    /**
+    * Get default options from asf_options::
+    * @since 0.9.3
+    */
+    private function getOptions() {
+        $options = new asf_options;
+        return $options->getOptions();
+    }
+
+    /**
+    * Get user options from db option 'asf_options'
+    * @since 0.9.3
+    */
+    private function getUserOptions() {
+        $options = $this->getOptions();
+        $userOptions = get_option('asf_options');
+        return $this->_sanitize->sanitizeUserOptions($userOptions,$options);
+    } 
+
+    /**
+    * Get user datas from db option 'asf_tmp_options'
+    * @since 0.9.3
+    */
+    private function getUserDatas($options) {
+        $userValues = get_option('asf_tmp_options');
+        return isset($userValues['datas']) ? $this->_sanitize->sanitizeTmpDatas($options,$userValues['datas']) : false;
+    }
+
+    /**
+    * Get title from id for WP_Post and WP_Term
+    * @since 0.9.0
+    */
     private function getTheTitle($postId) {
         $title = false;
         
@@ -180,6 +250,10 @@ class asf_FileName {
         return $title;
     }
 
+    /**
+    * Get slug from id for WP_Post and WP_Term
+    * @since 0.9.0
+    */
     private function getSlug($postId) {
         $slug = false;
         
@@ -196,85 +270,165 @@ class asf_FileName {
         return $slug;
     }
 
+    /**
+    * Get post type from id for WP_Post
+    * @since 0.9.0
+    */
     private function getPostType($postId) {
+        $type = false;
+
         $post = get_post($postId);
         if (!is_a($post, 'WP_Post')) return false;
 
         $obj = get_post_type_object(get_post_type($postId));
-        if($obj) {
-            return sanitize_title($obj->labels->singular_name);
+        if(is_a($obj,'WP_Post_Type')) {
+            $type = sanitize_title($obj->labels->singular_name);
         }
+
+        return $type;
     }
 
+    /**
+    * Get first post_tag slug from WP_Post id
+    * @since 0.9.0
+    */
     private function getFirstTag($postId) {
+        $tag = false;
+
         $post = get_post($postId);
         if (!is_a($post, 'WP_Post')) return false;
         
         $tags = get_the_tags($postId);
-        if(!$tags) return false;
-        return $tags[0]->slug;
+        if( $tags && is_array($tags) && isset($tags[0]) && is_a($tags[0], 'WP_Term') ) {
+            $tag = $tags[0]->slug;
+        }
+
+        return $tag;
     }
 
+    /**
+    * Get first category slug from WP_Post id
+    * @since 0.9.0
+    */
     private function getFirstCat($postId) {
+        $cat = false;
+
         $post = get_post($postId);
         if (!is_a($post, 'WP_Post')) return false;
         
         $cats = get_the_category($postId);
-        if(!$cats) return false;
-        return $cats[0]->slug;
+        if( $cats && is_array($cats) && isset($cats[0]) && is_a($cats[0], 'WP_Term') ) {
+            $cat = $cats[0]->slug;
+        }
+
+        return $cat;
     } 
 
-    private function getTermSlug($termId) {
-        if(is_string($termId) && !preg_match('/\d+$/', $termId)) return sanitize_title($termId);
+    /**
+    * Get Term Slug from user input
+    * @since 0.9.1
+    */
+    private function getTermSlug($value) {
+        $slug = false;
+
+        if(is_string($value) && !preg_match('/\d+$/', $value)) return $this->_sanitize->sanitizeString($value);
         
-        $termIds = is_array($termId) ? $termId : array($termId);
-        $term = get_term($termIds[0]);
-        if (!is_a($term, 'WP_Term')) return false;
-        return $term->slug;
+        $termIds = is_array($value) ? $value : array($value);
+        $termId = $this->_sanitize->sanitizeId($termIds[0]);
+        $term = get_term($termId);
+        if (is_a($term, 'WP_Term')) {
+            $slug = $term->slug;
+        }
+        return $slug;
     }
 
+    /**
+    * Get author name from WP_Post id
+    * @since 0.9.0
+    */
     private function getAuthor($postId) {
+        $author = false;
+
         $post = get_post($postId);
-        if (!is_a($post, 'WP_Post')) return false;
+        if (is_a($post, 'WP_Post')) {
+            $authorId = $post->post_author;
+            $author = $this->getAuthorName($authorId);
+        }
 
-        $authorId = $post->post_author;
-        return $this->getAuthorName($authorId);
+        return $author;
     }
 
+    /**
+    * Get author name from author id user input
+    * @since 0.9.0
+    */
     private function getAuthorName($authorId) {
+        $authorName = false;
+
         $author = get_the_author_meta('display_name', $authorId);
-        if(!$author) return false;
-        return sanitize_title($author);
+        if($author) {
+            $authorName = sanitize_title(sanitize_user($author,true));
+        }
+        
+        return $authorName;
     }
 
+    /**
+    * Get taxonomy name from WP_Term id
+    * @since 0.9.0
+    */
     private function getTaxonomyName($postId) {
+        $taxonomyName = false;
+
         $term = get_term($postId);
         if (!is_a($term, 'WP_Term')) return false;
+        
         $taxonomy = get_taxonomy($term->taxonomy);
-        if (!is_a($taxonomy, 'WP_Taxonomy')) return false;
-        return sanitize_title($taxonomy->labels->singular_name);
+        if (is_a($taxonomy, 'WP_Taxonomy')) {
+            $taxonomyName = sanitize_title($taxonomy->labels->singular_name);
+        }
+        return $taxonomyName;
     }
 
+    /**
+    * Get date published from WP_Post id
+    * default to current date
+    * @since 0.9.0
+    */
     private function getDatePublished($postId) {
+        $date = false;
+
         $post = get_post($postId);
-        if (!is_a($post, 'WP_Post')) return false;
-        
-        $date = get_the_date('Y-m-d',$postId);
+        if (is_a($post, 'WP_Post')) {
+            $date = get_the_date('Y-m-d',$postId);
+        }
+
         if (!$date) {
             $date = date('Y-m-d');
         }
+
         return $date;
     }
 
+    /**
+    * Get date modified from WP_Post id
+    * default to current date
+    * @since 0.9.0
+    */
     private function getDateModified($postId) {
+        $date = false;
+
         $post = get_post($postId);
-        if (!is_a($post, 'WP_Post')) return false;
+        if (is_a($post, 'WP_Post')) {
+            $date = get_the_modified_date('Y-m-d',$postId);
+        }
         
-        $date = get_the_modified_date('Y-m-d',$postId);
         if (!$date) {
             $date = date('Y-m-d');
         }
+
         return $date;
     }
+
 
 }
