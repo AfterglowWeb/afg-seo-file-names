@@ -86,7 +86,7 @@ class asf_options {
                     'title' => 'string',
                     'slug' => 'string',
                     'cat' => 'ids',
-                    'tag' => 'ids',
+                    'tag' => 'ids_string',
                     'author' => 'id',
                     'type' => 'string',
                     'taxonomy' => 'string',

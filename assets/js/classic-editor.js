@@ -11,8 +11,8 @@ jQuery(document).ready(function($) {
 	if($('form#edittag').length) postType = 'tag';
 	if($('form#addtag').length) postType = 'addTag';
 
-	asf_tagChanges();
-	asf_catChanges();
+	asf_childNodeChanges($('.tagchecklist').get(0),'tag-changed');
+	asf_childNodeChanges($('#categorychecklist').get(0),'cat-changed');
 	const datas = {
 			'id': false,
 	    	'title':'',
@@ -22,7 +22,6 @@ jQuery(document).ready(function($) {
 	 		'type':'',
 	 		'author':'',
 	 		'taxonomy':'',
-	 		'test':'dfghj',
 	};
 
 	getId();
@@ -269,6 +268,7 @@ jQuery(document).ready(function($) {
 	* Ajax POST
 	*/
 	function asf_ajax(datas) {
+		
 		$.ajax({
             type : 'POST',
             url : asfAjax.ajaxurl,
@@ -278,7 +278,7 @@ jQuery(document).ready(function($) {
                 asf_nonce: asfAjax.nonce,
             },
             success: function(response) {
-               console.log(response);
+
             },
             error : function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR + " :: " + textStatus + " :: " + errorThrown);
@@ -288,44 +288,21 @@ jQuery(document).ready(function($) {
 
 });//END jQuery
 
-function asf_tagChanges() {
-
-	var targetNode = document.getElementById('post_tag');
-	if(targetNode === undefined || targetNode === null) return;
+function asf_childNodeChanges(el,eventName) {
+	if(el === undefined || el === null) return;
 	var config = { attributes: false, childList: true, subtree: true, };
 
 	var callback = function(mutationsList) {
-		let event = new Event("tag-changed", {bubbles: true});
+		let event = new Event(eventName, {bubbles: true});
 	    for(var mutation of mutationsList) {
 	        if (mutation.type == 'childList') {
-	            targetNode.dispatchEvent(event);
+	            el.dispatchEvent(event);
 	        }
 	    }
 	};
 
 	var observer = new MutationObserver(callback);
-	observer.observe(targetNode, config);
-	
-}
-
-function asf_catChanges() {
-
-	var targetNode = document.getElementById('categorychecklist');
-	if(targetNode === undefined || targetNode === null) return;
-	var config = { attributes: false, childList: true, subtree: true, };
-
-	var callback = function(mutationsList) {
-		let event = new Event("cat-changed", {bubbles: true});
-	    for(var mutation of mutationsList) {
-	        if (mutation.type == 'childList') {
-	            targetNode.dispatchEvent(event);
-	        }
-	    }
-	};
-
-	var observer = new MutationObserver(callback);
-	observer.observe(targetNode, config);
-	
+	observer.observe(el, config);
 }
 
 function asf_firstTextNode(el) {

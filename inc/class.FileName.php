@@ -363,13 +363,16 @@ class asf_FileName {
     private function getTermSlug($value) {
         $slug = false;
 
-        if(is_string($value) && !preg_match('/\d+$/', $value)) return $this->_sanitize->sanitizeString($value);
+        if(is_string($value) && !preg_match('/^\d+$/', $value)) return $this->_sanitize->sanitizeString($value);
         
         $termIds = is_array($value) ? $value : array($value);
         $termId = $this->_sanitize->sanitizeId($termIds[0]);
         $term = get_term($termId);
         if (is_a($term, 'WP_Term')) {
             $slug = $term->slug;
+        }
+        if(!$slug) {
+            $slug = $this->_sanitize->sanitizeString($termIds[0]);
         }
         return $slug;
     }
@@ -412,7 +415,7 @@ class asf_FileName {
     private function getTaxonomyName($value) {
         $taxonomyName = false;
 
-        if(is_string($value) && !preg_match('/\d+$/', $value)) return $this->_sanitize->sanitizeString($value);
+        if(is_string($value) && !preg_match('/^\d+$/', $value)) return $this->_sanitize->sanitizeString($value);
 
         $term = get_term($value);
         if (!is_a($term, 'WP_Term')) return false;

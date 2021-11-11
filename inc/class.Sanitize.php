@@ -135,7 +135,9 @@ class asf_Sanitize {
 	            case 'ids_string' :
 	                if(is_array($value)) {
 	                	$value = $this->sanitizeTermIds($value);
-		                
+		                if(!$value) {
+		                	$value = $this->sanitizeString($value[0]);
+			            }
 		                if(!$value) {
 			                unset($datas[$key]);
 			                break;
