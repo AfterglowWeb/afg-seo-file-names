@@ -31,8 +31,7 @@ if(version_compare(get_bloginfo('version'),'4.9.18', '<') ) {
 
 define( 'AFG_ASF_PATH', plugin_dir_path( __FILE__ )  );
 define( 'AFG_ASF_URL', plugin_dir_url( __FILE__ ) );
-//define( 'AFG_ASF_VERSION', '0.9.3' );
-define( 'AFG_ASF_VERSION', rand() );
+define( 'AFG_ASF_VERSION', '0.9.3' );
 define( 'AFG_IS_ASF', isset($_GET['page']) && strpos($_GET['page'], 'asf-') == 0 ? true : false);
 
 
@@ -242,7 +241,6 @@ function asf_saveMeta() {
         $datas = $sanitize->sanitizeTmpDatas($options,$datas);
         $options['datas'] = $datas;
         update_option('asf_tmp_options',$options);
-        print_r($options['datas']);
 
         wp_die();
     }
