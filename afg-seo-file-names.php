@@ -31,7 +31,8 @@ if(version_compare(get_bloginfo('version'),'4.9.18', '<') ) {
 
 define( 'AFG_ASF_PATH', plugin_dir_path( __FILE__ )  );
 define( 'AFG_ASF_URL', plugin_dir_url( __FILE__ ) );
-define( 'AFG_ASF_VERSION', '0.9.3' );
+//define( 'AFG_ASF_VERSION', '0.9.3' );
+define( 'AFG_ASF_VERSION', rand() );
 define( 'AFG_IS_ASF', isset($_GET['page']) && strpos($_GET['page'], 'asf-') == 0 ? true : false);
 
 
@@ -189,7 +190,8 @@ function asf_preGetslug($slug, $postId, $postStatus, $postType, $postParent, $or
  */
 function asf_GutenbergScript() {
     $version = AFG_ASF_VERSION;
-    wp_enqueue_script( 'asf-gutenberg', AFG_ASF_URL . 'assets/js/gutenberg.js', array('wp-blocks'), $version, 'all');
+    wp_enqueue_script('asf-sanitizer', AFG_ASF_URL . 'assets/js/sanitizer.js', array(), $version, 'all');
+    wp_enqueue_script( 'asf-gutenberg', AFG_ASF_URL . 'assets/js/gutenberg.js', array('wp-blocks','asf-sanitizer'), $version, 'all');
     wp_localize_script( 'asf-gutenberg', 'asfAjax', array(
         'ajaxurl'=> admin_url( 'admin-ajax.php' ),
         'nonce' => wp_create_nonce('ajax-nonce'),
@@ -204,7 +206,8 @@ function asf_GutenbergScript() {
 function asf_classicEditorScript() {
     if(asf_isGutenbergEditor()) return;
     $version = AFG_ASF_VERSION;
-    wp_enqueue_script( 'asf-classic-editor', AFG_ASF_URL . 'assets/js/classic-editor.js', array('jquery'), $version, 'all' );
+    wp_enqueue_script('asf-sanitize', AFG_ASF_URL . 'assets/js/sanitize.js', array(), $version, 'all');
+    wp_enqueue_script( 'asf-classic-editor', AFG_ASF_URL . 'assets/js/classic-editor.js', array('jquery','asf-sanitize'), $version, 'all' );
     wp_localize_script( 'asf-classic-editor', 'asfAjax', array(
         'ajaxurl'=> admin_url( 'admin-ajax.php' ),
         'nonce' => wp_create_nonce('ajax-nonce'),
@@ -239,6 +242,7 @@ function asf_saveMeta() {
         $datas = $sanitize->sanitizeTmpDatas($options,$datas);
         $options['datas'] = $datas;
         update_option('asf_tmp_options',$options);
+        print_r($options['datas']);
 
         wp_die();
     }

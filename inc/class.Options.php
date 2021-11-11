@@ -32,7 +32,7 @@ class asf_options {
                 ),
                 'type' => array(
                     'title'  => __('Type','asf'),
-                    'desc'   => __('Current post or page type, empty on terms','asf'),
+                    'desc'   => __('Current post or page type. On terms, the type of post to which the term is linked','asf'),
                     'value'  => '',      
                 ),
                 'tag' => array(
@@ -52,7 +52,7 @@ class asf_options {
                 ),
                 'taxonomy'  => array(
                     'title'  => __('Taxonomy','asf'),
-                    'desc'   => __('Current term taxonomy name','asf'), 
+                    'desc'   => __('Current term taxonomy name, empty on posts and pages','asf'), 
                     'value'  => '',     
                 ),
                 'datepublished' => array(
@@ -89,6 +89,7 @@ class asf_options {
                     'tag' => 'ids',
                     'author' => 'id',
                     'type' => 'string',
+                    'taxonomy' => 'string',
             );
         }
 }

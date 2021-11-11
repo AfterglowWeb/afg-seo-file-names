@@ -60,6 +60,7 @@ https://github.com/AfterglowWeb/afg-seo-file-names/
 ### 0.9.3
 Major security fixes after 1st WordPress Plugin Directory team review.
 Class asf_Sanitize added.
+sanitize.js added.
 
 ### 0.9.21
 Bug fix on multiple tabs opened.

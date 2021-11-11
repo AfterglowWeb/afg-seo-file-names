@@ -1,124 +1,38 @@
+/**
+* @since 0.9.2
+*/
 jQuery(document).ready(function($) {
 
-	if($('#post_tag').length == 0) return;
+	if($('form#post').length == 0 && $('form#edittag').length == 0 && $('form#addtag').length == 0 ) return;
+	
+	var postType = false; 
+
+	if($('form#post').length) postType = 'post';
+	if($('form#edittag').length) postType = 'tag';
+	if($('form#addtag').length) postType = 'addTag';
 
 	asf_tagChanges();
 	asf_catChanges();
 	const datas = {
+			'id': false,
 	    	'title':'',
 	 		'slug':'',
 	 		'cat': new Array(),
 	 		'tag': new Array(),
-	 		'author':'',
 	 		'type':'',
+	 		'author':'',
+	 		'taxonomy':'',
+	 		'test':'dfghj',
 	};
 
-	/**
-	* Title
-	*/
-	var title = $('#title');
-	val = sanitizeText(title);
-	if(val) {
-		datas.title = val;
-	}
-	title.on('blur',function() {
-		val = sanitizeText($(this));
-		if(val) {
-			datas.title = val;
-			asf_ajax(datas);
-		}
-	});
-
-	/**
-	* Slug
-	*/
-	var slug = $('#post_name');
-	val = sanitizeText(slug);
-	if(val) {
-		datas.slug = val;
-	}
-
-	slug.on('change',function(){
-		val = sanitizeText($(this));
-		if(val) {
-			datas.slug = val;
-			asf_ajax(datas);
-		}
-	});
-
-	/**
-	* Cats
-	*/
-	var catEl = $('#categorychecklist');
-	var catEls = $('input',catEl);
-
-	catEls.each(function(){
-		if($(this).prop( "checked" )) {
-			datas.cat.push($(this).val());
-		}
-	});
-
-	catEls.each(function(){
-		$(this).on('change',function(){
-			datas.cat = new Array();
-			$('#categorychecklist input').each(function(){
-				if($(this).prop( "checked" )) {
-					datas.cat.push($(this).val());
-				}
-			});
-			asf_ajax(datas);
-		});
-	});
-
-	catEl.on('cat-changed',function(){
-		datas.cat = new Array();
-		$('input',this).each(function() {
-			if($(this).prop( "checked" )) {
-				datas.cat.push($(this).val());
-			}
-		});
-		asf_ajax(datas);
-	});	
-
-	/**
-	* Tags
-	*/
-	var tagEl = $('#post_tag');
-
-	$('.tagchecklist li',tagEl).each(function() {
-		var text = asf_firstTextNode($(this)[0]);
-		datas.tag.push(text);
-	});
-
-	tagEl.on('tag-changed',function(){
-		datas.tag = new Array();
-		$('.tagchecklist li',this).each(function() {
-			var text = asf_firstTextNode($(this)[0]);
-			datas.tag.push(text);
-		});
-		asf_ajax(datas);
-	});	
-
-	/**
-	* Author
-	*/
-	var authorEl = $('#post_author_override');
-	if(authorEl.val()) {
-		datas.author = authorEl.val();
-	} 
-	authorEl.on('change',function(){
-		datas.author = $(this).val();
-		asf_ajax(datas);
-	});
-
-	/**
-	* Post Type
-	*/
-	var postType = $('#post_type');
-	if(postType.val()) {
-		datas.type = postType.val();
-		asf_ajax(datas);
-	} 
+	getId();
+	getTitle();
+	getSlug();
+	getTaxonomy();
+	getCategories();
+	getTags();
+	getAuthor();
+	getPostType();
 
 	asf_ajax(datas);//First Post
 
@@ -126,6 +40,234 @@ jQuery(document).ready(function($) {
 	    asf_ajax(datas);
 	};
 
+	/**
+	* ID
+	*/
+	function getId() {
+		var currentId = false;
+		switch(postType) {
+			case 'post' :
+				currentId = $('input[name="post_ID"]');
+				break;
+			case 'tag' :
+				currentId = $('input[name="tag_ID"]');
+				break;
+		}
+		if(!currentId.length) return false;
+		
+		if( val = asf_sanitize.sanitizeInt(currentId.val()) ) {
+			datas.id = val;
+		}
+	}
+
+	/**
+	* Title
+	*/
+	function getTitle() {
+		var title = false;
+		switch(postType) {
+			case 'post' :
+				title = $('#title');
+				break;
+			case 'tag' :
+				title = $('#name');
+				break;
+			case 'addTag' :
+				title = $('#tag-name');
+				break;
+		}
+		if(!title.length) return false;
+
+		if(val = asf_sanitize.sanitizeText(title.val())) {
+			datas.title = val;
+		}
+
+		title.on('blur',function() {
+			if( val = asf_sanitize.sanitizeText($(this).val()) ) {
+				datas.title = val;
+				asf_ajax(datas);
+			}
+		});
+	}
+
+	/**
+	* Slug
+	*/
+	function getSlug() {
+		var slug = false;
+		switch(postType) {
+			case 'post' :
+				slug = $('#post_name');
+				break;
+			case 'tag' :
+				slug = $('#slug');
+				break;
+			case 'addTag' :
+				slug = $('#tag-slug');
+				break;
+		}
+		
+		if(slug.length) {
+			if( val = asf_sanitize.sanitizeText(slug.val()) ) {
+				datas.slug = val;
+			}
+		}
+
+		slug.on('change',function(){
+			if( val = asf_sanitize.sanitizeText($(this).val()) ) {
+				datas.slug = val;
+				asf_ajax(datas);
+			}
+		});
+	}
+
+	/**
+	* Taxonomy
+	*/
+	function getTaxonomy() {
+		var tagId = false;
+		var slug = false;
+		switch(postType) {
+			case 'tag' :
+				tagId = datas.id;
+				break;
+			case 'addTag' :
+				slug = $('input[name="taxonomy"]');
+				break;
+		}
+
+		if(tagId = asf_sanitize.sanitizeInt(tagId)) {
+			datas.taxonomy = tagId;
+		}
+
+		if(slug.length) {
+			if(slug = asf_sanitize.sanitizeText(slug.val())) {
+				datas.taxonomy = slug;
+			}
+		}
+	}
+
+	/**
+	* Cats
+	*/
+	function getCategories() {
+		var catEl = $('#categorychecklist');
+		var catEls = $('input',catEl);
+
+		if(!catEl.length) return false;
+
+		if(catEls.length) {
+			catEls.each(function(){
+				if($(this).prop( "checked" )) {
+					if(catId = asf_sanitize.sanitizeInt($(this).val())) {
+						datas.cat.push(catId);
+					} 
+				}
+			});
+
+			catEls.each(function(){
+				$(this).on('change',function(){
+					datas.cat = new Array();
+					$('#categorychecklist input').each(function(){
+						if($(this).prop( "checked" )) {
+							if(catId = asf_sanitize.sanitizeInt($(this).val())) {
+								datas.cat.push(catId);
+							}
+						}
+					});
+					asf_ajax(datas);
+				});
+			});
+		}
+		
+		catEl.on('cat-changed',function(){
+			datas.cat = new Array();
+			$('input',this).each(function() {
+				if($(this).prop( "checked" )) {
+					if(catId = asf_sanitize.sanitizeInt($(this).val())) {
+						datas.cat.push(catId);
+					}
+				}
+			});
+			asf_ajax(datas);
+		});	
+		
+	}
+
+
+	/**
+	* Tags
+	*/
+	function getTags() {
+		var tagEl = $('#post_tag');
+		if(!tagEl.length) return false;
+		
+		$('.tagchecklist li',tagEl).each(function() {
+			var text = asf_firstTextNode($(this)[0]);
+			if(text = asf_sanitize.sanitizeText(text)) {
+				datas.tag.push(text);
+			}
+		});
+
+		tagEl.on('tag-changed',function(){
+			datas.tag = new Array();
+			$('.tagchecklist li',this).each(function() {
+				var text = asf_firstTextNode($(this)[0]);
+				if(text = asf_sanitize.sanitizeText(text)) {
+					datas.tag.push(text);
+				}
+			});
+			asf_ajax(datas);
+		});	
+	}
+
+	/**
+	* Author
+	*/
+	function getAuthor() {
+		var authorEl = $('#post_author_override');
+		if(!authorEl.length) return false;
+
+		if(authorEl.val()) {
+			if(val = asf_sanitize.sanitizeInt(authorEl.val())) {
+				datas.author = val;
+			}
+		} 
+		authorEl.on('change',function(){
+			if(val = asf_sanitize.sanitizeInt($(this).val())) {
+				datas.author = val;
+			}
+			asf_ajax(datas);
+		});
+	}
+
+	/**
+	* Post Type
+	*/
+	function getPostType() {
+		switch(postType) {
+			case 'post' :
+				el = $('#post_type');
+				break;
+			case 'tag' :
+				el = $('#post_type');
+				break;
+			case 'addTag' :
+				el = $('input[name="post_type"]');
+				break;
+		}
+		if(!el.length) return;
+		if(el.val()) {
+			if(text = asf_sanitize.sanitizeText(el.val())) {
+				datas.type = text;
+			}
+			asf_ajax(datas);
+		} 
+	}
+
+	/**
+	* Ajax POST
+	*/
 	function asf_ajax(datas) {
 		$.ajax({
             type : 'POST',
@@ -136,7 +278,7 @@ jQuery(document).ready(function($) {
                 asf_nonce: asfAjax.nonce,
             },
             success: function(response) {
-               //console.log(response);
+               console.log(response);
             },
             error : function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR + " :: " + textStatus + " :: " + errorThrown);
@@ -144,19 +286,12 @@ jQuery(document).ready(function($) {
     	});
 	}
 
-	function sanitizeText(input) {
-		var val = input.val();
-		if(!val) return;
-		
-		val = asf_StripHtml(val).trim();
-		if(!val.length) return;
-		return val;
-	}
 });//END jQuery
 
 function asf_tagChanges() {
 
 	var targetNode = document.getElementById('post_tag');
+	if(targetNode === undefined || targetNode === null) return;
 	var config = { attributes: false, childList: true, subtree: true, };
 
 	var callback = function(mutationsList) {
@@ -176,6 +311,7 @@ function asf_tagChanges() {
 function asf_catChanges() {
 
 	var targetNode = document.getElementById('categorychecklist');
+	if(targetNode === undefined || targetNode === null) return;
 	var config = { attributes: false, childList: true, subtree: true, };
 
 	var callback = function(mutationsList) {
@@ -190,11 +326,6 @@ function asf_catChanges() {
 	var observer = new MutationObserver(callback);
 	observer.observe(targetNode, config);
 	
-}
-
-function asf_StripHtml(html){
-   let doc = new DOMParser().parseFromString(html, 'text/html');
-   return doc.body.textContent || "";
 }
 
 function asf_firstTextNode(el) {

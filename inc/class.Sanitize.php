@@ -50,8 +50,9 @@ class asf_Sanitize {
 	*/
 	public function sanitizeString($string) {
 		$string = sanitize_text_field($string);
+		$string = sanitize_title(remove_accents($string));
 		if(empty($string)) return false;
-        return sanitize_title($string);
+        return $string;
     }
 
     /**
@@ -96,7 +97,10 @@ class asf_Sanitize {
 	    if(!is_array($datas) || empty($datas)) return false;
 
 	    foreach ($datas as $key => $value) {
-	        if(!array_key_exists($key, $options['datas'])) continue;
+	        if(!array_key_exists($key, $options['datas'])) {
+	        	unset($datas[$key]);
+	        	continue;
+	        }
 
 	        switch ($options['datas'][$key]) {
 
@@ -149,6 +153,7 @@ class asf_Sanitize {
 	                    break;
 	                }
 	                break;
+
 	        }
 	    }
 	    if(empty($datas)) return false;

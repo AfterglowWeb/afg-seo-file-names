@@ -86,6 +86,9 @@ class asf_FileName {
     */
     private function getCurrentId() {
         $id = false;
+
+        /*$id = get_queried_object_id();
+        
         if(isset($_POST['post_id'])) {
             $postId = $this->_sanitize->sanitizeId($_POST['post_id']);
             if($post = get_post($postId)) {
@@ -101,15 +104,44 @@ class asf_FileName {
             }
         }
 
-        if(get_option('asf_tmp_term') != false) {
+        if(!isset($_GET['tag_ID']) && get_option('asf_tmp_term') != false) {
             $id = $this->_sanitize->sanitizeId(get_option('asf_tmp_term'));
             update_option('asf_tmp_term',false);
         }
 
 
-        if(get_option('asf_tmp_post') !== false) {
+        if(!isset($_POST['post_id']) && get_option('asf_tmp_post') !== false) {
             $id = $this->_sanitize->sanitizeId(get_option('asf_tmp_post'));
             update_option('asf_tmp_post',false);
+        }*/
+
+        
+        switch(true) {
+            case get_queried_object_id() :
+                $id = get_queried_object_id();
+                break;
+            case isset($_POST['post_id']) && $this->_sanitize->sanitizeId($_POST['post_id']) :
+                $postId = $this->_sanitize->sanitizeId($_POST['post_id']);
+                if($post = get_post($postId)) {
+                    $id = $post->ID;
+                    update_option('asf_tmp_post',false);
+                } 
+                break;
+            case isset($_GET['tag_ID']) && $this->_sanitize->sanitizeId($_GET['tag_ID']) :
+                $postId = $this->_sanitize->sanitizeId($_POST['post_id']);
+                if($post = get_post($postId)) {
+                    $id = $post->ID;
+                    update_option('asf_tmp_post',false);
+                } 
+                break;
+            case get_option('asf_tmp_term') != false :
+                $id = $this->_sanitize->sanitizeId(get_option('asf_tmp_term'));
+                update_option('asf_tmp_term',false);
+                break;
+            case get_option('asf_tmp_post') != false :
+                $id = $this->_sanitize->sanitizeId(get_option('asf_tmp_post'));
+                update_option('asf_tmp_post',false);
+                break;
         }
 
         return $id;
@@ -137,12 +169,11 @@ class asf_FileName {
     */
     private function fillUserOptions($options, $userDatas) {
         $postId = $this->getCurrentId();
-        $postId = !$postId && $userDatas['id'] ? $userDatas['id'] : false;
+        if(!$postId && $userDatas['id']) $postId = $userDatas['id'];
         foreach ($options['tags'] as $key => $array) {
             
             $value = $userDatas && is_array($userDatas) && array_key_exists($key, $userDatas) && !empty($userDatas[$key]) && $userDatas[$key] != false ? $userDatas[$key] : false;
-
-            if(!$value && !$postId) continue;
+            if(!$postId && !$value) continue;
                 
                 switch($key) {
                     case 'title' :
@@ -161,10 +192,10 @@ class asf_FileName {
                         $options['tags'][$key]['value'] = $value ? $this->getTermSlug($value) : $this->getFirstCat($postId);
                     break;
                     case 'author' :
-                        $options['tags'][$key]['value'] = $this->getAuthor($postId);
+                        $options['tags'][$key]['value'] = $value ? $this->getAuthorName($value) : $this->getAuthor($postId);
                     break;
                     case 'taxonomy' :
-                        $options['tags'][$key]['value'] = $this->getTaxonomyName($postId);
+                        $options['tags'][$key]['value'] = $value ? $this->getTaxonomyName($value) : $this->getTaxonomyName($postId);
                     break;
                     case 'datepublished' :
                         $options['tags'][$key]['value'] = $this->getDatePublished($postId);
@@ -174,6 +205,7 @@ class asf_FileName {
                     break;
                 } 
         }
+
 
         return $options;
     }
@@ -377,10 +409,12 @@ class asf_FileName {
     * Get taxonomy name from WP_Term id
     * @since 0.9.0
     */
-    private function getTaxonomyName($postId) {
+    private function getTaxonomyName($value) {
         $taxonomyName = false;
 
-        $term = get_term($postId);
+        if(is_string($value) && !preg_match('/\d+$/', $value)) return $this->_sanitize->sanitizeString($value);
+
+        $term = get_term($value);
         if (!is_a($term, 'WP_Term')) return false;
         
         $taxonomy = get_taxonomy($term->taxonomy);

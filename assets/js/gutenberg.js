@@ -1,4 +1,6 @@
-
+/**
+* @since 0.9.0
+*/
 const getPostId = () => wp.data.select('core/editor').getCurrentPostId();
 const getPostTitle = () => wp.data.select('core/editor').getEditedPostAttribute('title');
 const getPostSlug = () => wp.data.select('core/editor').getEditedPostSlug();
@@ -12,6 +14,7 @@ let slug = getPostSlug();
 let cat = getPostCat();
 let tag = getPostTag();
 let type = getPostType();
+let authorId = false;
 
 const datas = {
         'id': postId,
@@ -20,6 +23,7 @@ const datas = {
  		'cat':cat,
  		'tag':tag,
         'type':type,
+        'author':authorId,
     };
 
 wp.data.subscribe(() => {
@@ -35,22 +39,22 @@ window.onfocus = function() {
 function setDatas() {
 
     const newPostId = getPostId();    
-    if( postId !== newPostId && Number.isInteger(parseInt(newPostId, 10)) ) {
-        datas.id = parseInt(newPostId, 10);
+    if( postId !== newPostId && asf_sanitize.sanitizeInt(newPostId) ) {
+        datas.id = asf_sanitize.sanitizeInt(newPostId);
         asf_ajax(datas);
     }
     postId = newPostId;
 
     const newTitle = getPostTitle();    
-    if( title !== newTitle && newTitle.trim() != '' ) {
-        datas.title = newTitle;
+    if( title !== newTitle  && asf_sanitize.sanitizeText(newTitle) ) {
+        datas.title = asf_sanitize.sanitizeText(newTitle);
         asf_ajax(datas);
     }
     title = newTitle;
 
-    const newSlug = getPostSlug();    
-    if( slug !== newSlug && newSlug.trim() != '' ) {
-        datas.slug = newSlug;
+    const newSlug = getPostSlug(); 
+    if( slug !== newSlug && asf_sanitize.sanitizeText(newSlug)  ) {
+        datas.slug = asf_sanitize.sanitizeText(newSlug);
         asf_ajax(datas);
     }
     slug = newSlug;
@@ -70,17 +74,25 @@ function setDatas() {
     tag = newTag;
 
     const newType = getPostType();    
-    if( type !== newType && newType.trim() != '' ) {
-        datas.type = newType;
+    if( type !== newType && asf_sanitize.sanitizeText(newType) ) {
+        datas.type = asf_sanitize.sanitizeText(newType);
         asf_ajax(datas);
     }
     type = newType;
+
+    if(postId) {
+        wp.apiFetch( { path: '/wp/v2/posts/'+ postId } ).then( post => { authorId = post.author; });
+        if( asf_sanitize.sanitizeInt(authorId) ) {
+            datas.author = asf_sanitize.sanitizeInt(authorId);
+            asf_ajax(datas);
+        }
+    }
 }
 
 
 function asf_ajax(datas) {
     
-	ajaxFromJq({
+	asf_ajaxFromJq({
             type : 'POST',
             url : asfAjax.ajaxurl,
             data : {
@@ -89,7 +101,7 @@ function asf_ajax(datas) {
                 asf_nonce: asfAjax.nonce,
             },
             success: function(response) {
-               //console.log(response);
+               console.log(response);
             },
             error : function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR + " :: " + textStatus + " :: " + errorThrown);
@@ -98,7 +110,7 @@ function asf_ajax(datas) {
 }
 
 
-function ajaxFromJq(option) { // $.ajax(...) without jquery.
+function asf_ajaxFromJq(option) { // $.ajax(...) without jquery.
     if (typeof(option.url) == "undefined") {
         try {
             option.url = location.href;
