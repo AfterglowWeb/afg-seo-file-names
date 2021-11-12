@@ -40,43 +40,55 @@ function setDatas() {
 
     const newPostId = getPostId();    
     if( postId !== newPostId && asf_sanitize.sanitizeInt(newPostId) ) {
-        datas.id = asf_sanitize.sanitizeInt(newPostId);
-        asf_ajax(datas);
+        if(sanitizedNewPostId = asf_sanitize.sanitizeInt(newPostId)) {
+            datas.id = sanitizedNewPostId;
+            asf_ajax(datas);
+        }
     }
     postId = newPostId;
 
     const newTitle = getPostTitle();    
     if( title !== newTitle  && asf_sanitize.sanitizeText(newTitle) ) {
-        datas.title = asf_sanitize.sanitizeText(newTitle);
-        asf_ajax(datas);
+        if(sanitizedNewTitle = asf_sanitize.sanitizeText(newTitle)) {
+            datas.title = sanitizedNewTitle;
+            asf_ajax(datas);
+        }   
     }
     title = newTitle;
 
     const newSlug = getPostSlug(); 
     if( slug !== newSlug && asf_sanitize.sanitizeText(newSlug)  ) {
-        datas.slug = asf_sanitize.sanitizeText(newSlug);
-        asf_ajax(datas);
+        if(sanitizedNewSlug = asf_sanitize.sanitizeText(newSlug)) {
+            datas.slug = sanitizedNewSlug;
+            asf_ajax(datas);
+        }
     }
     slug = newSlug;
 
     const newCat = getPostCat();    
-    if( cat !== newCat && Array.isArray(newCat) ) {
-        datas.cat = newCat;
-        asf_ajax(datas);
+    if( cat !== newCat && asf_sanitize.sanitizeIds(newCat) ) {
+        if(sanitizedNewCat = asf_sanitize.sanitizeIds(newCat)) {
+            datas.cat = sanitizedNewCat;
+            asf_ajax(datas);
+        }
     }
     cat = newCat;
 
     const newTag = getPostTag();    
-    if( tag !== newTag && Array.isArray(newTag) ) {
-        datas.tag = newTag;
-        asf_ajax(datas);
+    if( tag !== newTag && asf_sanitize.sanitizeIds(newTag) ) {
+        if(sanitizedNewTag = asf_sanitize.sanitizeIds(newTag)) {
+            datas.tag = sanitizedNewTag;
+            asf_ajax(datas);
+        }
     }
     tag = newTag;
 
     const newType = getPostType();    
     if( type !== newType && asf_sanitize.sanitizeText(newType) ) {
-        datas.type = asf_sanitize.sanitizeText(newType);
-        asf_ajax(datas);
+        if(sanitizedNewType = asf_sanitize.sanitizeText(newType)) {
+            datas.type = sanitizedNewType;
+            asf_ajax(datas);
+        }
     }
     type = newType;
 
@@ -84,8 +96,8 @@ function setDatas() {
     postId = asf_sanitize.sanitizeInt(postId);
     if(type && postId) {
         wp.apiFetch( { path: '/wp/v2/'+type+'/'+ postId } ).then( post => { authorId = post.author; });
-        if( asf_sanitize.sanitizeInt(authorId) ) {
-            datas.author = asf_sanitize.sanitizeInt(authorId);
+        if(sanitizedAuthorId = asf_sanitize.sanitizeInt(authorId) ) {
+            datas.author = sanitizedAuthorId;
             asf_ajax(datas);
         }
     }
@@ -93,7 +105,6 @@ function setDatas() {
 
 
 function asf_ajax(datas) {
-    
 	asf_ajaxFromJq({
             type : 'POST',
             url : asfAjax.ajaxurl,

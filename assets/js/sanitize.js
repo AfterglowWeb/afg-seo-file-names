@@ -41,3 +41,17 @@
       if(i.trim().length) return parseInt(i);
       return false;
   }
+
+  asf_sanitize.sanitizeIds = (array) => {
+    if( array && array !== undefined && array.length && Array.isArray(array) ) {
+        array.forEach(function(value,i){
+          if(value = asf_sanitize.sanitizeInt(value)) {
+            array[i] = value;
+          } else {
+            delete array[i];
+          }
+        });
+        if(array.length >=1 && Array.isArray(array)) return array;
+        return false;  
+    }
+  }
