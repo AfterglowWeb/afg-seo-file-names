@@ -5,7 +5,7 @@ Tags: seo, filename, filenames, file, files, name, names, medialibrary, media, l
 Requires at least: 4.9.18
 Tested up to: 5.8.1
 Stable tag: 0.9.3
-Requires PHP: 5.2.4
+Requires PHP: 5.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 

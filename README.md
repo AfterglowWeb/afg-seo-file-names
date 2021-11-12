@@ -8,7 +8,7 @@ Seo File Names is a Wordpress plugin. It aims to save you time and boost your SE
 * Requires at least: WordPress 4.9.18
 * Tested up to: WordPress 5.8.1
 * Stable tag: 0.9.3
-* Requires PHP: 5.2.4
+* Requires PHP: 5.3
 * License: GPLv2 or later
 * License URI: https://www.gnu.org/licenses/gpl-2.0.html
 

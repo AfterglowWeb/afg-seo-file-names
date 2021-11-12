@@ -15,7 +15,7 @@
  * Author: Afterglow Web Agency
  * Author URI: https://afterglow-web.agency
  * Requires at least: 4.9.18
- * Requires PHP: 5.2.4
+ * Requires PHP: 5.3
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: seo-file-names
@@ -34,32 +34,27 @@ define( 'AFG_ASF_URL', plugin_dir_url( __FILE__ ) );
 define( 'AFG_ASF_VERSION', '0.9.3' );
 define( 'AFG_IS_ASF', isset($_GET['page']) && strpos($_GET['page'], 'asf-') == 0 ? true : false);
 
-
-
 add_action( 'plugins_loaded', 'asf_init' );
 add_action( 'init', 'asf_loadDomain' );
 add_action( 'admin_enqueue_scripts', 'asf_adminStyle');
 add_action( 'admin_enqueue_scripts', 'asf_clearUserVals');
-
 add_action( 'in_admin_header', 'asf_notices', 1000);
 add_filter( 'network_admin_plugin_action_links_'.plugin_basename(__FILE__), 'asf_pluginLinks' );
 add_filter( 'plugin_action_links_'.plugin_basename(__FILE__), 'asf_pluginLinks' );
-
 add_action( 'wp_ajax_asf_save_meta', 'asf_saveMeta' );
-
 add_action( 'admin_enqueue_scripts', 'asf_classicEditorScript');
 add_action( 'plugins_loaded', 'asf_saveTagId' );
 add_filter( 'wp_unique_post_slug', 'asf_preGetslug', 6, 10);
-
 add_filter( 'wp_handle_upload_prefilter', 'asf_rewriteFileName');
-
 add_action( 'enqueue_block_editor_assets', 'asf_GutenbergScript' );
 
-
 /**
- * Load includes
+ * Load PHP includes from /inc/
  * @hooks on 'plugins_loaded'
+ * 
  * @since 0.9.0
+ * 
+ * @return void
  */
 function asf_init() {
     require_once realpath(AFG_ASF_PATH . 'inc/class.Sanitize.php');
@@ -69,18 +64,24 @@ function asf_init() {
 }
 
 /**
- * Load textdomain.
+ * Load plugin textdomain
  * @hooks on 'init'
+ * 
  * @since 0.9.0
+ * 
+ * @return void
  */
 function asf_loadDomain() {
     load_plugin_textdomain( 'seo-file-names', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 }
 
 /**
-* Enqueues admin scripts and styles
+* Enqueues admin scripts and styles only on plugin option page
 * @hooks on 'admin_enqueue_scripts'
+* 
 * @since 0.9.0
+* 
+* @return scripts and styles loaded
 */ 
 function asf_adminStyle() {
     if(!AFG_IS_ASF) return;
@@ -94,21 +95,14 @@ function asf_adminStyle() {
 }
 
 /**
-* Clear last post ajax filled datas
-* if not on a Gutenberg post
-* @hooks on 'admin_enqueue_scripts'
-* @since 0.9.0
-*/ 
-function asf_clearUserVals() {
-    if(!asf_isGutenbergEditor()) {
-        update_option('asf_tmp_options',false);
-    }
-}
-
-/**
 * Plugin Links
+* 
+* Add plugin links in plugins list page
 * @hooks on '%plugin_action_links%'
+* 
 * @since 0.9.0
+* 
+* @return html - links
 */
 function asf_pluginLinks($links): array {
         array_unshift(
@@ -128,9 +122,13 @@ function asf_pluginLinks($links): array {
 }
 
 /**
-* Remove other plugin notices on plugin page
+* Remove other plugin notices on plugin option page
 * @hooks on 'in_admin_header'
+* 
 * @since 0.9.0
+* 
+* @return void
+* 
 */
 function asf_notices() {
     if(!AFG_IS_ASF) return;
@@ -141,7 +139,13 @@ function asf_notices() {
 /**
 * Filename rewrite wrapper
 * @hooks on 'wp_handle_upload_prefilter'
+* 
+* Run the main plugin methods to rewrite file names
+* 
 * @since 0.9.0
+* 
+* @return string - new file name
+* 
 */
 function asf_rewriteFileName($file) {
         $filename = new asf_FileName;
@@ -149,10 +153,34 @@ function asf_rewriteFileName($file) {
         return $file;
 }
 
+
+/**
+* Clear last post ajax filled datas
+* if not on a Gutenberg post
+* @hooks on 'admin_enqueue_scripts'
+* 
+* Update 'asf_tmp_options' DB option
+* 
+* @since 0.9.0
+* 
+* @return void
+*/ 
+function asf_clearUserVals() {
+    if(!asf_isGutenbergEditor()) {
+        update_option('asf_tmp_options',false);
+    }
+}
+
 /**
  * Save in DB for 'wp_handle_upload_prefilter' event
  * @hooks on 'plugins_loaded'
+ * 
+ * Update 'asf_tmp_term' DB option
+ * 
  * @since 0.9.0
+ * 
+ * @return void
+ * 
  */
 function asf_saveTagId() {
     if(isset($_GET['tag_ID']) && !empty($_GET['tag_ID'])) {
@@ -172,7 +200,13 @@ function asf_saveTagId() {
 /**
  * Get Slug as soon as it exists
  * @hooks on 'wp_unique_post_slug'
+ * 
+ * Update 'asf_tmp_post' DB option
+ * 
  * @since 0.9.0
+ * 
+ * @return void
+ * 
  */
 function asf_preGetslug($slug, $postId, $postStatus, $postType, $postParent, $originalSlug) {
 
@@ -183,9 +217,15 @@ function asf_preGetslug($slug, $postId, $postStatus, $postType, $postParent, $or
 }
 
 /**
- * Load Gutenberg Script
+ * Load Gutenberg Script and sanitize.js
  * @hooks on 'enqueue_block_editor_assets'
+ * 
+ * Load only on posts and pages supporting Gutenberg
+ * 
  * @since 0.9.0
+ * 
+ * @return scripts loaded
+ * 
  */
 function asf_GutenbergScript() {
     $version = AFG_ASF_VERSION;
@@ -198,9 +238,15 @@ function asf_GutenbergScript() {
 }
 
 /**
- * Load Classic Editor Script
+ * Load Classic Editor Script and sanitize.js
  * @hooks on 'admin_enqueue_scripts'
+ * 
+ * Load only on posts and pages not supporting Gutenberg
+ * 
  * @since 0.9.2
+ * 
+ * @return scripts loaded
+ * 
  */
 function asf_classicEditorScript() {
     if(asf_isGutenbergEditor()) return;
@@ -217,7 +263,13 @@ function asf_classicEditorScript() {
 /**
  * Ajax save latest post datas
  * @hooks on 'wp_ajax_asf_save_meta'
+ * 
+ * Update 'asf_tmp_options' DB option
+ * 
  * @since 0.9.0
+ * 
+ * @return void
+ * 
  */
 function asf_saveMeta() {
     if(isset($_POST['asf_nonce'])) {
@@ -250,7 +302,11 @@ function asf_saveMeta() {
 
 /**
 * Check if current page is using Guntenberg
+* 
 * @since 0.9.0
+* 
+* @return bol
+* 
 */
 function asf_isGutenbergEditor() {
     if( function_exists( 'is_gutenberg_page' ) && is_gutenberg_page() ) return true;
@@ -260,5 +316,3 @@ function asf_isGutenbergEditor() {
     if ( method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) return true;
     return false;
 }
-
-
