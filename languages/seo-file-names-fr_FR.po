@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: SEO File Names\n"
-"POT-Creation-Date: 2021-11-11 23:11+0100\n"
-"PO-Revision-Date: 2021-11-11 23:16+0100\n"
+"POT-Creation-Date: 2021-11-12 12:40+0100\n"
+"PO-Revision-Date: 2021-11-12 12:42+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -28,12 +28,12 @@ msgstr ""
 "Veuillez mettre à niveau WordPress vers la version 4.9.18 ou supérieure pour "
 "utiliser SEO File Names."
 
-#: afg-seo-file-names.php:118
+#: afg-seo-file-names.php:117
 #, php-format
 msgid "%1$sSettings%2$s"
 msgstr "%1$sRéglages%2$s"
 
-#: afg-seo-file-names.php:124
+#: afg-seo-file-names.php:123
 #, php-format
 msgid "%1$sSaved time? Buy me a coffee.%2$s"
 msgstr "%1$sGain de temps ? Payez votre café.%2$s"
@@ -124,8 +124,7 @@ msgstr "Auteur"
 
 #: inc/class.Options.php:50
 msgid "Current post or page author, empty on terms"
-msgstr ""
-"Auteur de l’article ou de la page en cours d’édition, vide sur les termes"
+msgstr "Auteur de l’article ou de la page en cours, vide sur les termes"
 
 #: inc/class.Options.php:54
 msgid "Taxonomy"
@@ -366,51 +365,3 @@ msgstr "Afterglow Web Agency"
 #. Author URI of the plugin/theme
 msgid "https://afterglow-web.agency"
 msgstr "https://afterglow-web.agency"
-
-#~ msgid "Seo File Names"
-#~ msgstr "Noms de fichiers Seo"
-
-#~ msgid "Automatically rename files on upload with custom pattern."
-#~ msgstr ""
-#~ "Renomme automatiquement les fichiers avec votre schéma SEO personnalisé "
-#~ "lorsque vous les ajoutez à la médiathèque."
-
-#~ msgid "AFG SEO File Name Filter"
-#~ msgstr "AFG Noms de fichier SEO "
-
-#~ msgid "Global plugin settings"
-#~ msgstr "Paramètres globaux du plug-in"
-
-#~ msgid "Current post or page tag, empty on terms as tag"
-#~ msgstr ""
-#~ "Étiquette de l’article ou de la page en cours d’édition, vide sur les "
-#~ "termes"
-
-#~ msgid "The date the current post, page or term as been published"
-#~ msgstr ""
-#~ "La date à laquelle l’article, la page ou le terme en cours d’édtion a été "
-#~ "publié"
-
-#~ msgid "The last date the current post, page or term as been modified"
-#~ msgstr ""
-#~ "La dernière date à laquelle l’article, la page ou le terme en cours "
-#~ "d’édition a été modifié"
-
-#~ msgid ""
-#~ "You can define specific schemes per post type below that will override "
-#~ "the global rule when applicable."
-#~ msgstr ""
-#~ "Vous pouvez définir ci-dessous des schémas spécifiques par type de "
-#~ "publication qui remplaceront la règle globale le cas échéant."
-
-#~ msgid "Purpose of Seo File Name plugin"
-#~ msgstr "But du plugin Seo File Name"
-
-#~ msgid ""
-#~ "Arbitrary text can only contain [a-z], [0-9] and '-' characters, it will "
-#~ "therefore be filtered (no space, underscore, special characters or "
-#~ "uppercase allowed)."
-#~ msgstr ""
-#~ "Le texte arbitraire ne peut contenir que des caractères [a-z], [0-9], "
-#~ "espace et '-', il sera donc filtré (pas de caractères spéciaux, accentués "
-#~ "ou de majuscules)."
