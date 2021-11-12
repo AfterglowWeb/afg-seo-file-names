@@ -18,7 +18,7 @@
  * Requires PHP: 5.2.4
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: asf
+ * Text Domain: seo-file-names
  * Domain Path: /languages
  */
 
@@ -26,7 +26,7 @@ defined( 'ABSPATH' ) || exit;
 
 if(version_compare(get_bloginfo('version'),'4.9.18', '<') ) {
     deactivate_plugins(plugin_basename(__FILE__));
-    die(__('Please upgrade WordPress to version 4.9.18 or higher to use SEO File Names.','asf'));
+    die(__('Please upgrade WordPress to version 4.9.18 or higher to use SEO File Names.','seo-file-names'));
 }
 
 define( 'AFG_ASF_PATH', plugin_dir_path( __FILE__ )  );
@@ -74,7 +74,7 @@ function asf_init() {
  * @since 0.9.0
  */
 function asf_loadDomain() {
-    load_plugin_textdomain( 'asf', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+    load_plugin_textdomain( 'seo-file-names', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 }
 
 /**
@@ -114,13 +114,13 @@ function asf_pluginLinks($links): array {
         array_unshift(
             $links,
             sprintf(
-                esc_html(__( '%1$sSettings%2$s', 'asf' )),
+                esc_html(__( '%1$sSettings%2$s', 'seo-file-names' )),
                 '<a href="' . menu_page_url( 'asf-settings', false ) . '">',
                 '</a>'
             )
         );
         $links[] = sprintf(
-            esc_html(__( '%1$sSaved time? Buy me a coffee.%2$s', 'asf' )),
+            esc_html(__( '%1$sSaved time? Buy me a coffee.%2$s', 'seo-file-names' )),
             '<a href="https://www.paypal.com/biz/fund?id=6WVXD3SYG3L58" target="_blank">',
             '</a>'
         );
@@ -189,8 +189,8 @@ function asf_preGetslug($slug, $postId, $postStatus, $postType, $postParent, $or
  */
 function asf_GutenbergScript() {
     $version = AFG_ASF_VERSION;
-    wp_enqueue_script('asf-sanitizer', AFG_ASF_URL . 'assets/js/sanitizer.js', array(), $version, 'all');
-    wp_enqueue_script( 'asf-gutenberg', AFG_ASF_URL . 'assets/js/gutenberg.js', array('wp-blocks','asf-sanitizer'), $version, 'all');
+    wp_enqueue_script('asf-sanitize', AFG_ASF_URL . 'assets/js/sanitize.js', array(), $version, 'all');
+    wp_enqueue_script( 'asf-gutenberg', AFG_ASF_URL . 'assets/js/gutenberg.js', array('wp-blocks','asf-sanitize'), $version, 'all');
     wp_localize_script( 'asf-gutenberg', 'asfAjax', array(
         'ajaxurl'=> admin_url( 'admin-ajax.php' ),
         'nonce' => wp_create_nonce('ajax-nonce'),
@@ -232,15 +232,16 @@ function asf_saveMeta() {
         
         if(!isset($options['datas']) && is_array(!$options['datas'])) wp_die();
         
-        $string = htmlspecialchars($_POST['asf_datas'],ENT_NOQUOTES);
-        $datas = json_decode(str_replace('\\', '', $string),true);
+        $sanitize = new asf_Sanitize;
+        $string = $sanitize->sanitizeJson($_POST['asf_datas']);
+
+        $datas = json_decode($string,true);
         if(!is_array($datas)) wp_die();
         
-        $sanitize = new asf_Sanitize;
-
-        $datas = $sanitize->sanitizeTmpDatas($options,$datas);
-        $options['datas'] = $datas;
-        update_option('asf_tmp_options',$options);
+        if($datas = $sanitize->sanitizeTmpDatas($options,$datas)) {
+            $options['datas'] = $datas;
+            update_option('asf_tmp_options',$options);
+        }
 
         wp_die();
     }

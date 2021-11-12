@@ -80,8 +80,10 @@ function setDatas() {
     }
     type = newType;
 
-    if(postId) {
-        wp.apiFetch( { path: '/wp/v2/posts/'+ postId } ).then( post => { authorId = post.author; });
+    type = asf_sanitize.sanitizeText(type);
+    postId = asf_sanitize.sanitizeInt(postId);
+    if(type && postId) {
+        wp.apiFetch( { path: '/wp/v2/'+type+'/'+ postId } ).then( post => { authorId = post.author; });
         if( asf_sanitize.sanitizeInt(authorId) ) {
             datas.author = asf_sanitize.sanitizeInt(authorId);
             asf_ajax(datas);
@@ -99,9 +101,6 @@ function asf_ajax(datas) {
                 action: 'asf_save_meta',
                 asf_datas: JSON.stringify(datas),
                 asf_nonce: asfAjax.nonce,
-            },
-            success: function(response) {
-               console.log(response);
             },
             error : function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR + " :: " + textStatus + " :: " + errorThrown);

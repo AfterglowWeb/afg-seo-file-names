@@ -1,3 +1,6 @@
+/**
+* @since 0.9.0
+*/
 jQuery(document).ready(function($) {
 
 	/**

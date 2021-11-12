@@ -208,9 +208,21 @@ class asf_Sanitize {
      }
 
     /**
+	* Sanitize Json
+	* @since 0.9.3.1
+	*/
+    public function sanitizeJson($json) {
+    	$json = sanitize_text_field($json);
+    	if(empty($json)) return false;
+       	$json = trim(preg_replace('/[^0-9a-zA-Z\-:",{}\[\]]/', '', $json));
+        if(empty($json)) return false;
+        return $json;
+     }
+
+    /**
     * Variation of '_sanitize_text_fields' native WP function
     * https://developer.wordpress.org/reference/functions/_sanitize_text_fields/
-    * Removed the hexadecimal filter to keep "%" separator
+    * Removed the hexadecimal filter to keep "%" separators
     * @since 0.9.1, moved to asf_Sanitized:: on 0.9.3
     */
     private function asf_sanitizeTextFields( $str, $keep_newlines = false ) {

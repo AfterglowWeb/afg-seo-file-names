@@ -13,8 +13,8 @@ class asf_optionPage {
 
     public function addOptionPage() {
         add_options_page(
-            esc_html(__('SEO File Names','asf')), 
-            esc_html(__('SEO File Names','asf')),
+            esc_html(__('SEO File Names','seo-file-names')), 
+            esc_html(__('SEO File Names','seo-file-names')),
             'manage_options', 
             'asf-settings', 
             array( $this, 'optionPageTemplate' )
@@ -31,14 +31,14 @@ class asf_optionPage {
 
         add_settings_section(
             'global_settings_id', // ID
-            esc_html(__('Pause the plugin?','asf')), // Title
+            esc_html(__('Pause the plugin?','seo-file-names')), // Title
             '', // Callback
             'asf-settings' // Page
         );
 
         add_settings_field(
             'is_paused', 
-            esc_html(__('Do you want to pause the plugin?','asf')), // Title
+            esc_html(__('Do you want to pause the plugin?','seo-file-names')), // Title
             array( $this, 'pauseField' ),  // Callback
             'asf-settings',  // Page
             'global_settings_id'
@@ -46,7 +46,7 @@ class asf_optionPage {
 
         add_settings_section(
             'default_settings_id', // ID
-            esc_html(__('File names settings','asf')), // Title
+            esc_html(__('File names settings','seo-file-names')), // Title
             '', // Callback
             'asf-settings' // Page
         );      
@@ -66,8 +66,8 @@ class asf_optionPage {
     public function optionPageTemplate() { ?>
         <div class="wrap">
             <h1>SEO File Names</h1>
-            <p class="asf-subtitle" aria-label="<?php echo esc_attr(__('Plugin translated title','asf')); ?>">
-                <?php echo esc_html(__('SEO File Names','asf').' — v.'.AFG_ASF_VERSION); ?>
+            <p class="asf-subtitle" aria-label="<?php echo esc_attr(__('Plugin translated title','seo-file-names')); ?>">
+                <?php echo esc_html(__('SEO File Names','seo-file-names').' — v.'.AFG_ASF_VERSION); ?>
              </p>
             <?php include realpath(AFG_ASF_PATH.'template-parts/option-page-info.php'); ?>
             <form method="post" action="options.php" class="asf-boxed">
@@ -116,9 +116,9 @@ class asf_optionPage {
 
         $args = array(
             'name'  => 'is_paused',
-            'label' => esc_html(__('Do you want to pause the plugin ?','asf')),
+            'label' => esc_html(__('Do you want to pause the plugin ?','seo-file-names')),
             'value' => $checked,
-            'info'  => esc_html(__('If the plugin is active (not paused) and no file names schema is set, the following scheme will apply: ','asf')).'<b>'.$this->_sanitize->sanitizeSchema($options['options']['default_schema']).'</b>',
+            'info'  => esc_html(__('If the plugin is active (not paused) and no file names schema is set, the following scheme will apply: ','seo-file-names')).'<b>'.$this->_sanitize->sanitizeSchema($options['options']['default_schema']).'</b>',
         );
         include realpath(AFG_ASF_PATH.'template-parts/field-checkbox.php');
     }

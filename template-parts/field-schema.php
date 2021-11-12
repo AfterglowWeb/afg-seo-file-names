@@ -1,8 +1,8 @@
 <?php defined('ABSPATH') || exit; ?>
 <div class="asf-field-wrapper">
     <label class="notice" for="asf-default-schema">
-        <?php echo esc_html(__('Click on a tag to start building the file name schema.','asf')); ?><br>
-        <?php echo esc_html(__('You can insert arbitrary text between each tag.','asf')); ?>
+        <?php esc_html_e('Click on a tag to start building the file name schema.','seo-file-names'); ?><br>
+        <?php esc_html_e('You can insert arbitrary text between each tag.','seo-file-names'); ?>
     </label>
     <p class="asf-tags">
         <?php foreach ($options['tags'] as $key => $array) { ?>
@@ -16,9 +16,9 @@
         <?php } ?>
     </p>
     <p class="clear"></p>
-    <input type="text" id="asf-default-schema" name="asf_options[default_schema]" value="<?php echo esc_attr($value);?>" placeholder="<?php echo esc_html($placeHolder); ?>" />
-    <button type="button" class="asf-clear button button-secondary" data-for="asf-default-schema"><?php echo esc_html(__('Clear','asf')); ?></button>
+    <input type="text" id="asf-default-schema" name="asf_options[default_schema]" value="<?php echo esc_attr($value);?>" placeholder="<?php echo esc_attr($placeHolder); ?>" />
+    <button type="button" class="asf-clear button button-secondary" data-for="asf-default-schema"><?php esc_html_e('Clear','seo-file-names'); ?></button>
     <p class="notice">
-        <?php echo esc_html(__('This filename scheme will apply to all files you upload to your website from now on.','asf')); ?>
+        <?php esc_html_e('This filename scheme will apply to all files you upload to your website from now on.','seo-file-names'); ?>
     </p>
 </div>

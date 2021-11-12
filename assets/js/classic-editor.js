@@ -277,9 +277,6 @@ jQuery(document).ready(function($) {
                 asf_datas: JSON.stringify(datas),
                 asf_nonce: asfAjax.nonce,
             },
-            success: function(response) {
-
-            },
             error : function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR + " :: " + textStatus + " :: " + errorThrown);
             },

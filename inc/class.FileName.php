@@ -87,35 +87,6 @@ class asf_FileName {
     private function getCurrentId() {
         $id = false;
 
-        /*$id = get_queried_object_id();
-        
-        if(isset($_POST['post_id'])) {
-            $postId = $this->_sanitize->sanitizeId($_POST['post_id']);
-            if($post = get_post($postId)) {
-                $id = $post->ID;
-                update_option('asf_tmp_post',false);
-            }     
-        }
-        if(isset($_GET['tag_ID'])) {
-            $tagId = $this->_sanitize->sanitizeId($_GET['tag_ID']);
-            if($term = get_term($tagId)) {
-                $id = $term->term_id;
-                update_option('asf_tmp_term',false);
-            }
-        }
-
-        if(!isset($_GET['tag_ID']) && get_option('asf_tmp_term') != false) {
-            $id = $this->_sanitize->sanitizeId(get_option('asf_tmp_term'));
-            update_option('asf_tmp_term',false);
-        }
-
-
-        if(!isset($_POST['post_id']) && get_option('asf_tmp_post') !== false) {
-            $id = $this->_sanitize->sanitizeId(get_option('asf_tmp_post'));
-            update_option('asf_tmp_post',false);
-        }*/
-
-        
         switch(true) {
             case get_queried_object_id() :
                 $id = get_queried_object_id();
