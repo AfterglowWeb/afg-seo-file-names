@@ -1,5 +1,5 @@
 === Seo File Names ===
-Contributors: @afterglow22
+Contributors: afterglow22
 Donate link: https://www.paypal.com/donate?hosted_button_id=R9VBTGPEG5QXU
 Tags: seo, filename, filenames, file, files, name, names, medialibrary, media, library, editor, gutenberg
 Requires at least: 4.9.18
