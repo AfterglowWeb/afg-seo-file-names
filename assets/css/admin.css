@@ -57,17 +57,33 @@
     overflow: hidden;
 }
 
+.settings_page_asf-settings .ui-widget {
+    font-family: unset;
+}
+
+.settings_page_asf-settings .ui-widget-content {
+    border: unset;
+}
+
 .settings_page_asf-settings .asf-section-header,
+.settings_page_asf-settings .ui-accordion .asf-section-header.ui-accordion-header,
 .settings_page_asf-settings form.asf-boxed h2 {
     display: block;
     font-weight: 600;
     font-size: 22px;
     line-height: 22px;
     color:#1d2327;
+    background: unset;
     background-color: #f8f9fa;
     padding: 20px;
     margin: 0;
+    border-radius: 0;
+    border: unset;
     border-bottom: 1px solid #b5bfc9;
+}
+
+.settings_page_asf-settings .ui-accordion .asf-section-header.ui-accordion-header .ui-accordion-header-icon {
+    display: none;
 }
 
 .settings_page_asf-settings .asf-section-content {
