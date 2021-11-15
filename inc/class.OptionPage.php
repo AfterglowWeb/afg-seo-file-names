@@ -26,7 +26,7 @@ class asf_optionPage {
         register_setting(
             'asf_option_group', // Option group
             'asf_options', // Option name
-            array($this->_sanitize,'sanitize'), // Sanitize
+            array($this->_sanitize,'sanitize') // Sanitize
         );
 
         add_settings_section(

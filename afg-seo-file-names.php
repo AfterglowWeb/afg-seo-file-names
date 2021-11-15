@@ -11,11 +11,11 @@
  * Plugin Name: SEO File Names
  * Plugin URI: https://afterglow-web.agency/en/seo-file-names/
  * Description: SEO File Names aims to save you time and boost your SEO by automatically renaming the files you upload to the media library with SEO friendly names.
- * Version: 0.9.3
+ * Version: 0.9.32
  * Author: Afterglow Web Agency
  * Author URI: https://afterglow-web.agency
  * Requires at least: 4.9.18
- * Requires PHP: 5.3
+ * Requires PHP: 7.2
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: seo-file-names
@@ -23,7 +23,10 @@
  */
 
 defined( 'ABSPATH' ) || exit;
-
+if(version_compare(PHP_VERSION, '7.2.0', '<' ) ) {
+    deactivate_plugins(plugin_basename(__FILE__));
+    die(__('Please upgrade PHP to version 7.2.0 or higher to use SEO File Names.','seo-file-names'));
+}
 if(version_compare(get_bloginfo('version'),'4.9.18', '<') ) {
     deactivate_plugins(plugin_basename(__FILE__));
     die(__('Please upgrade WordPress to version 4.9.18 or higher to use SEO File Names.','seo-file-names'));
@@ -31,7 +34,7 @@ if(version_compare(get_bloginfo('version'),'4.9.18', '<') ) {
 
 define( 'AFG_ASF_PATH', plugin_dir_path( __FILE__ )  );
 define( 'AFG_ASF_URL', plugin_dir_url( __FILE__ ) );
-define( 'AFG_ASF_VERSION', '0.9.3' );
+define( 'AFG_ASF_VERSION', '0.9.32' );
 define( 'AFG_IS_ASF', isset($_GET['page']) && strpos($_GET['page'], 'asf-') == 0 ? true : false);
 
 add_action( 'plugins_loaded', 'asf_init' );
