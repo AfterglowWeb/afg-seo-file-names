@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/donate?hosted_button_id=R9VBTGPEG5QXU
 Tags: seo, filename, filenames, file, files, name, names, medialibrary, media, library, editor, gutenberg
 Requires at least: 4.9.18
 Tested up to: 5.8.2
-Stable tag: 0.9.32
+Stable tag: 0.9.33
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -45,7 +45,7 @@ Seo File Names aims to save you time and boost your SEO by automatically renamin
 
 * Go to Seo File Names settings page in Settings > Seo File Names
 
-* Set your file naming scheme, disable pause and save.
+* Select your users, set your file naming scheme, disable pause and save.
 
 * If no scheme is defined, the default file naming scheme used to rewrite your filenames is {site name}-{site description}-{original filename}.
 
@@ -64,7 +64,9 @@ Seo File Names aims to save you time and boost your SEO by automatically renamin
 == Screenshots ==
 
 1. Administration page of Seo File Names
-2. Result on a file name
+2. Set users who will use Seo File Names
+3. Temporarly pause Seo File Names
+4. Result on a file name
 
 == Contribute ==
 
@@ -75,6 +77,9 @@ Seo File Names aims to save you time and boost your SEO by automatically renamin
 * If you are interested in further collaboration, just [leave me a message on this page](https://afterglow-web.agency "Création de site web à Nice").
 
 == Changelog ==
+
+= 0.9.33 =
+Users selection field
 
 = 0.9.32 =
 Full support for PHP 7.2.0

@@ -17,7 +17,8 @@ class asf_options {
     private function setOptions() {
             $this->_options['options'] = array(
                 'default_schema' => '%blogname%%blogdesc%%filename%',
-                'is_paused' => '1',
+                'is_paused' => 1,
+                'default_users' => '',
             );
             $this->_options['tags'] = array(
                 'title' => array(
@@ -90,6 +91,8 @@ class asf_options {
                     'author' => 'id',
                     'type' => 'string',
                     'taxonomy' => 'string',
+                    'tmp_post' => 'id',
+                    'tmp_tag' => 'id',
             );
         }
 }

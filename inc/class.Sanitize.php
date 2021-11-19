@@ -10,8 +10,11 @@ if(class_exists('asf_Sanitize')) return;
  */
 class asf_Sanitize {
 
-	public function __construct() {
+	private $_options;
 
+	public function __construct() {
+		$options = new asf_options;
+		$this->_options = $options->getOptions();
 	}
 
 	/**
@@ -19,8 +22,8 @@ class asf_Sanitize {
 	* @since 0.9.3
 	*/
 	public function sanitizeId($id) {
-        $id = preg_replace("/[^0-9]/", "", $id);
-        return !empty($id) ? (int) $id : false;
+        $id = preg_replace("/[^0-9]./", "", $id);
+        return !empty($id) && $id !== 0 ? (int) $id : false;
     }
 
     /**
@@ -92,17 +95,17 @@ class asf_Sanitize {
 	* Sanitize db option 'asf_tmp_options'
 	* @since 0.9.3
 	*/
-	public function sanitizeTmpDatas($options,$datas = array()) {
-	    
-	    if(!is_array($datas) || empty($datas)) return false;
+	public function sanitizeTmpDatas($options, $datas = array()) {
 
+	    if(!isset($datas)) return false;
+	    if(!is_array($datas)) return false;
 	    foreach ($datas as $key => $value) {
-	        if(!array_key_exists($key, $options['datas'])) {
+	        if(!array_key_exists($key, $options)) {
 	        	unset($datas[$key]);
 	        	continue;
 	        }
 
-	        switch ($options['datas'][$key]) {
+	        switch ($options[$key]) {
 
 	            case 'string':
 	            	if(!$this->sanitizeString($value)) {
@@ -162,20 +165,6 @@ class asf_Sanitize {
 	    return $datas;
 	}
 
-	/**
-    * Sanitize db option 'asf_options'
-    * @since 0.9.3
-    */
-    public function sanitize( $input ) {
-        if( isset( $input['default_schema'] ) && !empty( trim($input['default_schema']) ) ) {
-            $input['default_schema'] = $this->sanitizeSchema($input['default_schema']);
-        }
-        if( isset( $input['is_paused'] ) ) {
-            $input['is_paused'] = '1';
-        }
-        return $input;
-    }
-
     /**
 	* Sanitize Schema Field
 	* @since 0.9.3
@@ -188,13 +177,17 @@ class asf_Sanitize {
     }
 
     /**
-	* Sanitize User Options
+	* Sanitize db user option 'asf_options'
 	* @since 0.9.3
 	*/
-    public function sanitizeUserOptions($userOptions,$options) {
+    public function sanitizeUserOptions($userOptions) {
             if(!is_array($userOptions)) return false;
+            if(!is_array($this->_options)) return false;
             foreach($userOptions as $key => $value) {
-                if(!array_key_exists($key, $options)) continue;
+                if(!array_key_exists($key, $this->_options['options'])) {
+                	unset($userOptions[$key]);
+                	continue;
+                } 
                 switch($key) {
                     case 'default_schema' :
                         $userOptions[$key] = $value ? $this->sanitizeSchema($value) : '';
@@ -202,6 +195,9 @@ class asf_Sanitize {
                     case 'is_paused' :
                         $userOptions[$key] = '1';
                         break;
+                   	case 'default_users' :
+                   		$userOptions[$key] = $value ? $this->sanitizeIds($value) : '';
+                   		break;
                 }
             }
             return $userOptions;

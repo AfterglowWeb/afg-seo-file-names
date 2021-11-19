@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: SEO File Names\n"
-"POT-Creation-Date: 2021-11-12 12:40+0100\n"
-"PO-Revision-Date: 2021-11-12 12:42+0100\n"
+"POT-Creation-Date: 2021-11-19 19:53+0100\n"
+"PO-Revision-Date: 2021-11-19 19:55+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -21,50 +21,60 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
 
-#: afg-seo-file-names.php:29
+#: afg-seo-file-names.php:28
+msgid "Please upgrade PHP to version 7.2.0 or higher to use SEO File Names."
+msgstr ""
+"Veuillez mettre à niveau PHP vers la version 7.2.0 ou supérieure pour "
+"utiliser SEO File Names."
+
+#: afg-seo-file-names.php:32
 msgid ""
 "Please upgrade WordPress to version 4.9.18 or higher to use SEO File Names."
 msgstr ""
 "Veuillez mettre à niveau WordPress vers la version 4.9.18 ou supérieure pour "
 "utiliser SEO File Names."
 
-#: afg-seo-file-names.php:117
+#: afg-seo-file-names.php:116
 #, php-format
 msgid "%1$sSettings%2$s"
 msgstr "%1$sRéglages%2$s"
 
-#: afg-seo-file-names.php:123
+#: afg-seo-file-names.php:122
 #, php-format
 msgid "%1$sSaved time? Buy me a coffee.%2$s"
 msgstr "%1$sGain de temps ? Payez votre café.%2$s"
 
 #. Plugin Name of the plugin/theme
-#: inc/class.OptionPage.php:16 inc/class.OptionPage.php:17
-#: inc/class.OptionPage.php:70
+#: inc/class.OptionPage.php:19 inc/class.OptionPage.php:20
+#: inc/class.OptionPage.php:90
 msgid "SEO File Names"
 msgstr "Noms de fichiers SEO"
 
-#: inc/class.OptionPage.php:34
+#: inc/class.OptionPage.php:39
 msgid "Pause the plugin?"
 msgstr "Plugin en pause ?"
 
-#: inc/class.OptionPage.php:41
+#: inc/class.OptionPage.php:46
 msgid "Do you want to pause the plugin?"
 msgstr "Voulez-vous mettre le plugin en pause ?"
 
-#: inc/class.OptionPage.php:49
+#: inc/class.OptionPage.php:54
+msgid "Choose users"
+msgstr ""
+
+#: inc/class.OptionPage.php:69
 msgid "File names settings"
 msgstr "Paramètres des noms de fichiers"
 
-#: inc/class.OptionPage.php:69
+#: inc/class.OptionPage.php:89
 msgid "Plugin translated title"
 msgstr "Titre traduit du plugin"
 
-#: inc/class.OptionPage.php:119
+#: inc/class.OptionPage.php:141
 msgid "Do you want to pause the plugin ?"
 msgstr "Voulez-vous mettre le plugin en pause ?"
 
-#: inc/class.OptionPage.php:121
+#: inc/class.OptionPage.php:144
 msgid ""
 "If the plugin is active (not paused) and no file names schema is set, the "
 "following scheme will apply: "
@@ -72,27 +82,57 @@ msgstr ""
 "Si le plug-in est actif (non mis en pause) et qu’aucun schéma de noms de "
 "fichiers n’est défini, le schéma suivant s’applique : "
 
-#: inc/class.Options.php:24
+#: inc/class.OptionPage.php:180
+msgid "Choose the user who will use SEO File Names:"
+msgid_plural "Choose the users who will use SEO File Names:"
+msgstr[0] "Choisissez l’utilisateur qui utilisera SEO File Names :"
+msgstr[1] "Choisissez les utilisateurs qui utiliseront SEO File Names :"
+
+#: inc/class.OptionPage.php:183
+msgid "Administrator"
+msgid_plural "Administrators"
+msgstr[0] "Administrateur"
+msgstr[1] ""
+
+#: inc/class.OptionPage.php:187
+msgid "Editor"
+msgid_plural "Editors"
+msgstr[0] "Éditeur"
+msgstr[1] ""
+
+#: inc/class.OptionPage.php:191 inc/class.Options.php:50
+msgid "Author"
+msgid_plural "Authors"
+msgstr[0] "Auteur"
+msgstr[1] "Auteur"
+
+#: inc/class.OptionPage.php:195
+msgid "Only selected user will run SEO File Names."
+msgid_plural "Only selected users will run SEO File Names."
+msgstr[0] "Seul l’utilisateur sélectionné exécutera SEO File Names."
+msgstr[1] "Seuls les utilisateurs sélectionnés exécuteront SEO File Names."
+
+#: inc/class.Options.php:25
 msgid "Title"
 msgstr "Titre"
 
-#: inc/class.Options.php:25
+#: inc/class.Options.php:26
 msgid "Current post, page or term title"
 msgstr "Titre de l’article, de la page ou du terme en cours d’édition"
 
-#: inc/class.Options.php:29
+#: inc/class.Options.php:30
 msgid "Slug"
 msgstr "Slug"
 
-#: inc/class.Options.php:30
+#: inc/class.Options.php:31
 msgid "Current post, page or term slug"
 msgstr "Slug de l’article, de la page ou du terme en cours d’édition"
 
-#: inc/class.Options.php:34
+#: inc/class.Options.php:35
 msgid "Type"
 msgstr "Type"
 
-#: inc/class.Options.php:35
+#: inc/class.Options.php:36
 msgid ""
 "Current post or page type. On terms, the type of post to which the term is "
 "linked"
@@ -100,93 +140,89 @@ msgstr ""
 "Type de l’article ou de la page en cours d’édition. Sur les termes, type du "
 "post auquel celui-ci est lié"
 
-#: inc/class.Options.php:39
+#: inc/class.Options.php:40
 msgid "Tag"
 msgstr "Étiquette"
 
-#: inc/class.Options.php:40
+#: inc/class.Options.php:41
 msgid "Current post or page tag, empty on terms"
 msgstr ""
 "Étiquettes de l’article ou de la page en cours d’édition, vide sur les termes"
 
-#: inc/class.Options.php:44
+#: inc/class.Options.php:45
 msgid "Category"
 msgstr "Catégorie"
 
-#: inc/class.Options.php:45
+#: inc/class.Options.php:46
 msgid "Current post or page category, empty on terms"
 msgstr ""
 "Catégorie de l’article ou de la page en cours d’édition, vide sur les termes"
 
-#: inc/class.Options.php:49
-msgid "Author"
-msgstr "Auteur"
-
-#: inc/class.Options.php:50
+#: inc/class.Options.php:51
 msgid "Current post or page author, empty on terms"
 msgstr "Auteur de l’article ou de la page en cours, vide sur les termes"
 
-#: inc/class.Options.php:54
+#: inc/class.Options.php:55
 msgid "Taxonomy"
 msgstr "Taxonomie"
 
-#: inc/class.Options.php:55
+#: inc/class.Options.php:56
 msgid "Current term taxonomy name, empty on posts and pages"
 msgstr ""
 "Taxonomie du terme en cours d’édition, vide sur les articles et les pages"
 
-#: inc/class.Options.php:59
+#: inc/class.Options.php:60
 msgid "Date published"
 msgstr "Date de publication"
 
-#: inc/class.Options.php:60
+#: inc/class.Options.php:61
 msgid "Current post or page first published date, empty on terms"
 msgstr ""
 "Date de publication de l’article ou de la page en cours d’édition, vide sur "
 "les termes"
 
-#: inc/class.Options.php:64
+#: inc/class.Options.php:65
 msgid "Date modified"
 msgstr "Date de modification"
 
-#: inc/class.Options.php:65
+#: inc/class.Options.php:66
 msgid "Last date, current post or page as been modified, empty on terms"
 msgstr ""
 "Date de modification de l’article ou de la page en cours d’édition, vide sur "
 "les termes"
 
-#: inc/class.Options.php:69
+#: inc/class.Options.php:70
 msgid "Site name"
 msgstr "Nom du site"
 
-#: inc/class.Options.php:70
+#: inc/class.Options.php:71
 msgid "The site name"
 msgstr "Le nom du site"
 
-#: inc/class.Options.php:74
+#: inc/class.Options.php:75
 msgid "Site description"
 msgstr "Description du site"
 
-#: inc/class.Options.php:75
+#: inc/class.Options.php:76
 msgid "The site description"
 msgstr "La description du site"
 
-#: inc/class.Options.php:79
+#: inc/class.Options.php:80
 msgid "Original filename"
 msgstr "Nom du fichier d’origine"
 
-#: inc/class.Options.php:80
+#: inc/class.Options.php:81
 msgid ""
 "The sanitized orginal filename, usefull to keep track of your local files"
 msgstr ""
 "Le nom de fichier original nettoyé, utile pour garder la trace de vos "
 "fichiers locaux"
 
-#: template-parts/field-checkbox.php:5
+#: template-parts/field-checkbox.php:5 template-parts/field-radio.php:18
 msgid "No"
 msgstr "Non"
 
-#: template-parts/field-checkbox.php:10
+#: template-parts/field-checkbox.php:10 template-parts/field-radio.php:23
 msgid "Yes"
 msgstr "Oui"
 
@@ -210,6 +246,11 @@ msgid ""
 msgstr ""
 "Ce schéma de nom de fichier s’appliquera à tous les fichiers que vous "
 "mettrez dans la bibliothèque de média à partir de maintenant."
+
+#: template-parts/field-users.php:18
+#, php-format
+msgid "(ID: %s)"
+msgstr "(ID : %s)"
 
 #: template-parts/option-page-info.php:3
 msgid "Goal of SEO File Names"

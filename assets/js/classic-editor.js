@@ -264,25 +264,6 @@ jQuery(document).ready(function($) {
 		} 
 	}
 
-	/**
-	* Ajax POST
-	*/
-	function asf_ajax(datas) {
-		
-		$.ajax({
-            type : 'POST',
-            url : asfAjax.ajaxurl,
-            data : {
-                action: 'asf_save_meta',
-                asf_datas: JSON.stringify(datas),
-                asf_nonce: asfAjax.nonce,
-            },
-            error : function(jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR + " :: " + textStatus + " :: " + errorThrown);
-            },
-    	});
-	}
-
 });//END jQuery
 
 function asf_childNodeChanges(el,eventName) {
