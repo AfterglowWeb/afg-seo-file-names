@@ -180,15 +180,18 @@ class asf_optionPage {
         <p class="title"><b><?php echo esc_html(_n('Choose the user who will use SEO File Names:','Choose the users who will use SEO File Names:',$nUsers,'seo-file-names')); ?></b></p>
         <?php 
         $asfUsers = $admins;
-        $subtitle = _n('Administrator','Administrators',count($asfUsers),'seo-file-names');
+        $n = is_array($asfUsers) ? count($asfUsers) : 0;
+        $subtitle = _n('Administrator','Administrators',$n,'seo-file-names');
         include realpath(AFG_ASF_PATH.'template-parts/field-users.php');
 
         $asfUsers = $editors;
-        $subtitle = _n('Editor','Editors',count($asfUsers),'seo-file-names');
+        $n = is_array($asfUsers) ? count($asfUsers) : 0;
+        $subtitle = _n('Editor','Editors',$n,'seo-file-names');
         include realpath(AFG_ASF_PATH.'template-parts/field-users.php');
 
         $asfUsers = $authors;
-        $subtitle = _n('Author','Authors',count($asfUsers),'seo-file-names');
+        $n = is_array($asfUsers) ? count($asfUsers) : 0;
+        $subtitle = _n('Author','Authors',$n,'seo-file-names');
         include realpath(AFG_ASF_PATH.'template-parts/field-users.php');
         ?>
         <div class="asf-notice-wrapper">

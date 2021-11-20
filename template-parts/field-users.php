@@ -17,7 +17,7 @@ foreach ($asfUsers as $asfUser) {
         'value' => $userId,
         'info-1'  => sprintf( esc_html__('(ID: %s)','seo-file-names'), strval( $userId ) ),
         'info-2'  => sanitize_email($user->user_email),
-        'checked' => in_array($userId, $value) ? 'checked' : '',
+        'checked' => $value && in_array($userId, $value) ? 'checked' : '',
         'class' => '',
     );
     include realpath(AFG_ASF_PATH.'template-parts/field-checkbox.php');

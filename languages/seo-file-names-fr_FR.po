@@ -1,17 +1,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: SEO File Names\n"
-"POT-Creation-Date: 2021-11-19 19:53+0100\n"
-"PO-Revision-Date: 2021-11-19 19:55+0100\n"
+"POT-Creation-Date: 2021-11-20 01:21+0100\n"
+"PO-Revision-Date: 2021-11-20 01:23+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 2.2.3\n"
 "X-Poedit-Basepath: ..\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
 "X-Poedit-WPHeader: afg-seo-file-names.php\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -34,12 +34,12 @@ msgstr ""
 "Veuillez mettre à niveau WordPress vers la version 4.9.18 ou supérieure pour "
 "utiliser SEO File Names."
 
-#: afg-seo-file-names.php:116
+#: afg-seo-file-names.php:115
 #, php-format
 msgid "%1$sSettings%2$s"
 msgstr "%1$sRéglages%2$s"
 
-#: afg-seo-file-names.php:122
+#: afg-seo-file-names.php:121
 #, php-format
 msgid "%1$sSaved time? Buy me a coffee.%2$s"
 msgstr "%1$sGain de temps ? Payez votre café.%2$s"
@@ -60,7 +60,7 @@ msgstr "Voulez-vous mettre le plugin en pause ?"
 
 #: inc/class.OptionPage.php:54
 msgid "Choose users"
-msgstr ""
+msgstr "Choisir des utilisateurs"
 
 #: inc/class.OptionPage.php:69
 msgid "File names settings"
@@ -88,25 +88,25 @@ msgid_plural "Choose the users who will use SEO File Names:"
 msgstr[0] "Choisissez l’utilisateur qui utilisera SEO File Names :"
 msgstr[1] "Choisissez les utilisateurs qui utiliseront SEO File Names :"
 
-#: inc/class.OptionPage.php:183
+#: inc/class.OptionPage.php:184
 msgid "Administrator"
 msgid_plural "Administrators"
 msgstr[0] "Administrateur"
-msgstr[1] ""
+msgstr[1] "Administrateurs"
 
-#: inc/class.OptionPage.php:187
+#: inc/class.OptionPage.php:189
 msgid "Editor"
 msgid_plural "Editors"
 msgstr[0] "Éditeur"
-msgstr[1] ""
+msgstr[1] "Éditeurs"
 
-#: inc/class.OptionPage.php:191 inc/class.Options.php:50
+#: inc/class.OptionPage.php:194 inc/class.Options.php:50
 msgid "Author"
 msgid_plural "Authors"
 msgstr[0] "Auteur"
-msgstr[1] "Auteur"
+msgstr[1] "Auteurs"
 
-#: inc/class.OptionPage.php:195
+#: inc/class.OptionPage.php:198
 msgid "Only selected user will run SEO File Names."
 msgid_plural "Only selected users will run SEO File Names."
 msgstr[0] "Seul l’utilisateur sélectionné exécutera SEO File Names."

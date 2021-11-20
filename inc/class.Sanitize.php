@@ -33,7 +33,7 @@ class asf_Sanitize {
 	public function sanitizeIds($ids) {
 		
 		if(!array($ids)) return false;
-        
+        if(empty($ids)) return false;
         foreach($ids as $intKey => $id) {
         	if(!$this->sanitizeId($id)) {
         		unset($ids[$intKey]);

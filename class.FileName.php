@@ -87,9 +87,6 @@ class asf_FileName {
     private function getCurrentId() {
         $id = false;
 
-        $userId = asf_getCurrentUserId();
-        $usersDatas = asf_getUsersData();
-
         switch(true) {
             case get_queried_object_id() :
                 $id = get_queried_object_id();
@@ -98,17 +95,23 @@ class asf_FileName {
                 $postId = $this->_sanitize->sanitizeId($_POST['post_id']);
                 if($post = get_post($postId)) {
                     $id = $post->ID;
-                    $usersDatas[$userId]['tmp_post'] = false;
-                    update_option('asf_tmp_options',array('datas' => $usersDatas));
+                    update_option('asf_tmp_post',false);
                 } 
                 break;
             case isset($_GET['tag_ID']) && $this->_sanitize->sanitizeId($_GET['tag_ID']) :
                 $postId = $this->_sanitize->sanitizeId($_POST['post_id']);
                 if($post = get_post($postId)) {
                     $id = $post->ID;
-                    $usersDatas[$userId]['tmp_post'] = false;
-                    update_option('asf_tmp_options',array('datas' => $usersDatas));
+                    update_option('asf_tmp_post',false);
                 } 
+                break;
+            case get_option('asf_tmp_term') != false :
+                $id = $this->_sanitize->sanitizeId(get_option('asf_tmp_term'));
+                update_option('asf_tmp_term',false);
+                break;
+            case get_option('asf_tmp_post') != false :
+                $id = $this->_sanitize->sanitizeId(get_option('asf_tmp_post'));
+                update_option('asf_tmp_post',false);
                 break;
         }
 
@@ -226,13 +229,8 @@ class asf_FileName {
     * @since 0.9.3
     */
     private function getUserDatas($options) {
-        
-        $userId = $this->_sanitize->sanitizeId(get_current_user_id());
-        if(!$userId) return false;
-
         $userValues = get_option('asf_tmp_options');
-
-        return isset($userValues['datas'][$userId]) ? $this->_sanitize->sanitizeTmpDatas($options['datas'], $userValues['datas'][$userId]) : false;
+        return isset($userValues['datas']) ? $this->_sanitize->sanitizeTmpDatas($options,$userValues['datas']) : false;
     }
 
     /**
