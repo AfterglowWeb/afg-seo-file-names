@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/donate?hosted_button_id=R9VBTGPEG5QXU
 Tags: seo, filename, filenames, file, files, name, names, medialibrary, media, library, editor, gutenberg
 Requires at least: 4.9.18
 Tested up to: 5.8.2
-Stable tag: 0.9.33
+Stable tag: 0.9.34
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -78,8 +78,11 @@ Seo File Names aims to save you time and boost your SEO by automatically renamin
 
 == Changelog ==
 
+= 0.9.34 =
+Bug fix: asf_preGetslug function removed as conflicting with other plugins
+
 = 0.9.33 =
-Users selection field
+New feature: users selection field
 
 = 0.9.32 =
 Full support for PHP 7.2.0

@@ -1,5 +1,6 @@
 <?php defined('ABSPATH') || exit; ?>
-<div class="asf-field-wrapper">
+<div class="asf-field-wrapper asf-schema">
+    <p class="title"><?php esc_html_e('Set file names schema','seo-file-names'); ?></p>
     <label class="notice" for="asf-default-schema">
         <?php esc_html_e('Click on a tag to start building the file name schema.','seo-file-names'); ?><br>
         <?php esc_html_e('You can insert arbitrary text between each tag.','seo-file-names'); ?>

@@ -11,15 +11,20 @@ if(class_exists('asf_FileName')) return;
 class asf_FileName {
 
     private $_originalFilename;
+    
     private $_sanitize;
 
     public function __construct() {
+
         $this->_sanitize = new asf_Sanitize;
+
     } 
 
     /**
     * Rewrite file name
+    * 
     * @since 0.9.0
+    * 
     */
     public function rewriteFileName($file) {
 
@@ -28,10 +33,13 @@ class asf_FileName {
         if($userOptions && isset($userOptions['is_paused']) && $userOptions['is_paused'] == '1') return $file;
 
         $fileName = sanitize_file_name($file['name']);
+
         $this->_originalFilename = pathinfo($fileName, PATHINFO_FILENAME);
+
         $ext = pathinfo($fileName, PATHINFO_EXTENSION);
 
-        $name = $this->fileName($userOptions);
+        $name = $this->replaceTags($userOptions);
+
         if(!$name) return $file;
 
         $file['name'] = sanitize_file_name($name.'.'.$ext);
@@ -40,71 +48,96 @@ class asf_FileName {
     }
 
     /**
-    * Filename merge Options and Tags
-    * @since 0.9.0
-    */
-    private function fileName($userOptions = false) {
-        $options = $this->fillOptions();
-        if(!$options) return false;
-        $fileName = false;
-        
-        if( $userOptions && isset($userOptions['default_schema']) && !empty($userOptions['default_schema']) ) {
-            $fileName = $this->replaceTags($options, $userOptions['default_schema']);
-        } else {
-            $fileName = $this->replaceTags($options, $options['options']['default_schema']);
-        }
-
-        return $fileName;
-    }
-
-    /**
     * Replace Tags
+    * 
     * @since 0.9.0
+    * 
     */
-    private function replaceTags($options, $schema) {
-        $fileName = false;
-        if( isset($options['tags']) && !empty($options['tags'])) {
-            foreach($options['tags'] as $key => $array) {
-                if($array['value']) {
-                    $schema = $fileName ? $fileName : $schema;
-                    $fileName = str_replace('%'.$key.'%', '-'.$array['value'].'-', $schema);
-                } else {
-                    $schema = $fileName ? $fileName : $schema;
-                    $fileName = str_replace('%'.$key.'%', '', $schema);
-                }
-            }
-            $fileName = preg_replace('/\-{2,}/', '-', $fileName);
-            $fileName = preg_replace('/^\-{1,}/', '', $fileName);
-            $fileName = preg_replace('/\-{1,}$/', '', $fileName);
+    private function replaceTags($userOptions) {
+
+        $options = $this->fillOptions();
+
+        if(!$options) return false;
+
+        if(!isset($options['tags'])) return false;
+
+        if(!is_array($options['tags'])) return false;
+
+        $schema = $this->_sanitize->sanitizeSchema($options['options']['default_schema']);
+
+        if( $userOptions && isset($userOptions['default_schema']) && $this->_sanitize->sanitizeSchema($userOptions['default_schema']) ) {
+            
+            $schema = $this->_sanitize->sanitizeSchema($userOptions['default_schema']);
+
         }
+
+        if(!$schema) return false;
+
+        $fileName = false;
+
+        foreach($options['tags'] as $key => $array) {
+
+            if($array['value']) {
+
+                $fileName = str_replace('%'.$key.'%', '-'.$array['value'].'-', $schema);
+
+            } else {
+
+                $fileName = str_replace('%'.$key.'%', '', $schema);
+
+            }
+
+        }
+
+        if( empty(mb_strlen($fileName, 'UTF-8')) ) return false;
+
+        $fileName = $this->_sanitize->normalizeDashes($fileName);
+
+        if($fileName === false) return false;
+
         return $fileName;
+
     }
 
     /**
     * Get current id
+    * 
     * @since 0.9.0
+    * 
     */
     private function getCurrentId() {
+
         $id = false;
 
         $userId = asf_getCurrentUserId();
+
         $usersDatas = asf_getUsersData();
 
         switch(true) {
             case get_queried_object_id() :
+
                 $id = get_queried_object_id();
+
                 break;
             case isset($_POST['post_id']) && $this->_sanitize->sanitizeId($_POST['post_id']) :
+
                 $postId = $this->_sanitize->sanitizeId($_POST['post_id']);
+
                 if($post = get_post($postId)) {
+
                     $id = $post->ID;
                     $usersDatas[$userId]['tmp_post'] = false;
                     update_option('asf_tmp_options',array('datas' => $usersDatas));
+
                 } 
+
                 break;
             case isset($_GET['tag_ID']) && $this->_sanitize->sanitizeId($_GET['tag_ID']) :
+
                 $postId = $this->_sanitize->sanitizeId($_POST['post_id']);
+
                 if($post = get_post($postId)) {
+
                     $id = $post->ID;
                     $usersDatas[$userId]['tmp_post'] = false;
                     update_option('asf_tmp_options',array('datas' => $usersDatas));
@@ -117,30 +150,49 @@ class asf_FileName {
 
     /**
     * Fill Options
+    * 
     * @since 0.9.0
+    * 
     */
     private function fillOptions() {
         
         $options = $this->getOptions();
-        $userDatas = $this->getUserDatas($options);
         
         if( !isset($options['tags']) && !is_array($options['tags']) ) return false;
         
-        $options = $this->fillUserOptions($options, $userDatas);
+        if($userDatas = $this->getUserDatas($options)) {
+
+            $options = $this->fillUserOptions($options, $userDatas);
+            
+        }
+
         $options = $this->fillGlobalOptions($options);
+
         return $options;
     }
 
     /**
     * Fill User Options
+    * 
     * @since 0.9.3
+    * 
     */
     private function fillUserOptions($options, $userDatas) {
+        
         $postId = $this->getCurrentId();
+        
         if(!$postId && $userDatas['id']) $postId = $userDatas['id'];
+        
         foreach ($options['tags'] as $key => $array) {
             
-            $value = $userDatas && is_array($userDatas) && array_key_exists($key, $userDatas) && !empty($userDatas[$key]) && $userDatas[$key] != false ? $userDatas[$key] : false;
+            $value = false;
+
+            if(is_array($userDatas) && array_key_exists($key, $userDatas)) {
+                
+                if( !empty($userDatas[$key]) ) $value = $userDatas[$key];
+            
+            }
+
             if(!$postId && !$value) continue;
                 
                 switch($key) {
@@ -180,7 +232,9 @@ class asf_FileName {
 
     /**
     * Fill Global Options
+    * 
     * @since 0.9.3
+    * 
     */
     private function fillGlobalOptions($options) {
         
@@ -203,11 +257,37 @@ class asf_FileName {
     }
 
     /**
+    * Search and replace
+    * 
+    * @since 0.9.4
+    */
+    private function searchReplace() {
+
+        $fileName = $this->_originalFilename;
+
+        $userDatas = $this->getUserOptions();
+
+        $rules = $this->_sanitize->sanitizeRepeaterField($userDatas,'default_search_replace');
+        
+        if(!$rules) return $fileName;
+
+        foreach($rules as $rule) {
+
+            $fileName = str_replace($rule['search'],$rule['replace'],$fileName);
+
+        }
+
+        return $fileName;
+    }
+
+    /**
     * Get default options from asf_options::
     * @since 0.9.3
     */
     private function getOptions() {
+        
         $options = new asf_options;
+        
         return $options->getOptions();
     }
 
@@ -216,23 +296,35 @@ class asf_FileName {
     * @since 0.9.3
     */
     private function getUserOptions() {
+        
         $options = $this->getOptions();
+        
         $userOptions = get_option('asf_options');
+        
         return $this->_sanitize->sanitizeUserOptions($userOptions,$options);
     } 
 
     /**
     * Get user datas from db option 'asf_tmp_options'
+    * 
     * @since 0.9.3
+    * 
     */
     private function getUserDatas($options) {
         
         $userId = $this->_sanitize->sanitizeId(get_current_user_id());
+        
         if(!$userId) return false;
 
         $userValues = get_option('asf_tmp_options');
 
-        return isset($userValues['datas'][$userId]) ? $this->_sanitize->sanitizeTmpDatas($options['datas'], $userValues['datas'][$userId]) : false;
+        if(!isset($userValues['datas'][$userId])) return false;
+
+        $userDatas = $this->_sanitize->sanitizeTmpDatas($options['datas'], $userValues['datas'][$userId]);
+
+        if(!$userDatas) return false;
+
+        return $userDatas;
     }
 
     /**
@@ -336,7 +428,7 @@ class asf_FileName {
     private function getTermSlug($value) {
         $slug = false;
 
-        if(is_string($value) && !preg_match('/^\d+$/', $value)) return $this->_sanitize->sanitizeString($value);
+        if(is_string($value) && !preg_match('/^\d+$/', $value)) return $this->_sanitize->sanitizeString($value, true);
         
         $termIds = is_array($value) ? $value : array($value);
         $termId = $this->_sanitize->sanitizeId($termIds[0]);
@@ -345,7 +437,7 @@ class asf_FileName {
             $slug = $term->slug;
         }
         if(!$slug) {
-            $slug = $this->_sanitize->sanitizeString($termIds[0]);
+            $slug = $this->_sanitize->sanitizeString($termIds[0], true);
         }
         return $slug;
     }
@@ -388,7 +480,7 @@ class asf_FileName {
     private function getTaxonomyName($value) {
         $taxonomyName = false;
 
-        if(is_string($value) && !preg_match('/^\d+$/', $value)) return $this->_sanitize->sanitizeString($value);
+        if(is_string($value) && !preg_match('/^\d+$/', $value)) return $this->_sanitize->sanitizeString($value, true);
 
         $term = get_term($value);
         if (!is_a($term, 'WP_Term')) return false;

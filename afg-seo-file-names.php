@@ -11,7 +11,7 @@
  * Plugin Name: SEO File Names
  * Plugin URI: https://afterglow-web.agency/en/seo-file-names/
  * Description: SEO File Names aims to save you time and boost your SEO by automatically renaming the files you upload to the media library with SEO friendly names.
- * Version: 0.9.33
+ * Version: 0.9.34
  * Author: Afterglow Web Agency
  * Author URI: https://afterglow-web.agency
  * Requires at least: 4.9.18
@@ -34,7 +34,8 @@ if(version_compare(get_bloginfo('version'),'4.9.18', '<') ) {
 
 define( 'AFG_ASF_PATH', plugin_dir_path( __FILE__ )  );
 define( 'AFG_ASF_URL', plugin_dir_url( __FILE__ ) );
-define( 'AFG_ASF_VERSION', '0.9.33' );
+//define( 'AFG_ASF_VERSION', '0.9.34' );
+define( 'AFG_ASF_VERSION', rand() );
 define( 'AFG_IS_ASF', isset($_GET['page']) && strpos($_GET['page'], 'asf-') == 0 ? true : false);
 
 add_action( 'plugins_loaded', 'asf_init' );
@@ -48,7 +49,6 @@ add_action( 'admin_enqueue_scripts', 'asf_adminStyle');
 add_action( 'wp_ajax_asf_save_meta', 'asf_saveMeta' );
 add_action( 'admin_enqueue_scripts', 'asf_classicEditorScript');
 add_action( 'plugins_loaded', 'asf_saveTagId' );
-add_filter( 'wp_unique_post_slug', 'asf_preGetslug', 6, 10);
 add_filter( 'wp_handle_upload_prefilter', 'asf_rewriteFileName');
 add_action( 'enqueue_block_editor_assets', 'asf_GutenbergScript' );
 /**
@@ -63,6 +63,7 @@ function asf_init() {
     if(!is_admin()) return;
     require_once realpath(AFG_ASF_PATH . 'inc/class.Options.php');
     require_once realpath(AFG_ASF_PATH . 'inc/class.Sanitize.php');
+    require_once realpath(AFG_ASF_PATH . 'inc/helpers.php');
     require_once realpath(AFG_ASF_PATH . 'inc/class.OptionPage.php');
     require_once realpath(AFG_ASF_PATH . 'inc/class.FileName.php');      
 }
@@ -91,7 +92,7 @@ function asf_adminStyle() {
     if(!AFG_IS_ASF) return;
     $version = AFG_ASF_VERSION;
     wp_enqueue_style('asf-admin', AFG_ASF_URL.'assets/css/admin.css', array(), $version, 'all');
-    wp_enqueue_script( 'asf-admin', AFG_ASF_URL . 'assets/js/admin.js', array('jquery','jquery-ui-accordion'), $version, 'all' );
+    wp_enqueue_script( 'asf-admin', AFG_ASF_URL . 'assets/js/admin.js', array('jquery','jquery-ui-accordion','jquery-ui-sortable'), $version, 'all' );
     wp_localize_script( 'asf-admin', 'asfAjax', array(
         'ajaxurl'=> admin_url( 'admin-ajax.php' ),
         'nonce' => wp_create_nonce('ajax-admin-nonce'),
@@ -267,32 +268,6 @@ function asf_saveTagId() {
         update_option('asf_tmp_options',array('datas' => $datas));
         
     }
-}
-
-/**
- * Get Slug as soon as it exists
- * @hooks on 'wp_unique_post_slug'
- * 
- * Update 'asf_tmp_options' DB option
- * 
- * @since 0.9.0
- * 
- * @return (string) slug
- * 
- */
-function asf_preGetslug($slug, $postId, $postStatus, $postType, $postParent, $originalSlug) {
-    if(!asf_isUserActivated()) return $slug;
-    
-    $sanitize = new asf_Sanitize;
-    $postId = $sanitize->sanitizeId($postId);
-    
-    $datas = asf_getUsersData();
-    $userId = asf_getCurrentUserId();
-    if(!$userId && !$datas) return $slug;
-
-    $datas[$userId]['tmp_post'] = $postId;
-    update_option('asf_tmp_options',array('datas' => $datas));
-    return $slug;
 }
 
 /**
