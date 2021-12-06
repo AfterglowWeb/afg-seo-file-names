@@ -9,16 +9,32 @@ if(class_exists('asf_FileName')) return;
 * @since 0.9.0
 */
 class asf_FileName {
-
-    private $_originalFilename;
     
     private $_sanitize;
+
+    private $_userOptions;
+
+    private $_userDatas;
+
+    private $_tags;
+
+    private $_userTags;
+
+    private $_originalFilename;
+
+    private $_filename;
 
     public function __construct() {
 
         $this->_sanitize = new asf_Sanitize;
+        $this->_userOptions = $this->getUserOptions();
+        $this->_userDatas = $this->getUserDatas();
+        $this->_tags = $this->getTagsOptions();
+        $this->_userTags = array( 'tags' => array() );
+        $this->_originalFilename = false;
+        $this->_filename = false;
 
-    } 
+    }
 
     /**
     * Rewrite file name
@@ -28,9 +44,7 @@ class asf_FileName {
     */
     public function rewriteFileName($file) {
 
-        $userOptions = $this->getUserOptions();
-
-        if($userOptions && isset($userOptions['is_paused']) && $userOptions['is_paused'] == '1') return $file;
+        if($this->_userOptions && isset($this->_userOptions['is_paused']) && $this->_userOptions['is_paused'] == '1') return $file;
 
         $fileName = sanitize_file_name($file['name']);
 
@@ -38,11 +52,15 @@ class asf_FileName {
 
         $ext = pathinfo($fileName, PATHINFO_EXTENSION);
 
-        $name = $this->replaceTags($userOptions);
+        if($this->filterRawFilename()) $this->searchReplace();
 
-        if(!$name) return $file;
+        $this->replaceTags();
 
-        $file['name'] = sanitize_file_name($name.'.'.$ext);
+        $this->searchReplace();
+
+        if(!$this->_filename) return $file;
+
+        $file['name'] = sanitize_file_name($this->_filename.'.'.$ext);
 
         return $file;
     }
@@ -53,50 +71,292 @@ class asf_FileName {
     * @since 0.9.0
     * 
     */
-    private function replaceTags($userOptions) {
+    private function replaceTags() {
 
-        $options = $this->fillOptions();
+        $schema = false;
 
-        if(!$options) return false;
-
-        if(!isset($options['tags'])) return false;
-
-        if(!is_array($options['tags'])) return false;
-
-        $schema = $this->_sanitize->sanitizeSchema($options['options']['default_schema']);
-
-        if( $userOptions && isset($userOptions['default_schema']) && $this->_sanitize->sanitizeSchema($userOptions['default_schema']) ) {
-            
-            $schema = $this->_sanitize->sanitizeSchema($userOptions['default_schema']);
-
-        }
+        if(!empty($this->_userOptions['default_schema'])) $schema = $this->_userOptions['default_schema'];
 
         if(!$schema) return false;
 
-        $fileName = false;
+        $fileName = $schema;
 
-        foreach($options['tags'] as $key => $array) {
+        $userTags = $this->_userTags;
 
-            if($array['value']) {
+        if($this->_userDatas && $this->_tags && $userTags) {
 
-                $fileName = str_replace('%'.$key.'%', '-'.$array['value'].'-', $schema);
+            $userTags = $this->fillUserTags($userTags);
+            
+        }
+
+        $userTags = $this->fillGlobalTags($userTags);
+
+        $userTags = $this->fillSearchReplaceTags($userTags);
+
+        foreach($userTags['tags'] as $key => $value) {
+
+            if(!empty($value)) {
+
+                $fileName = str_replace('%'.$key.'%', '-'.$value.'-', $fileName);
 
             } else {
 
-                $fileName = str_replace('%'.$key.'%', '', $schema);
+                $fileName = str_replace('%'.$key.'%', '', $fileName);
 
             }
 
         }
 
-        if( empty(mb_strlen($fileName, 'UTF-8')) ) return false;
-
         $fileName = $this->_sanitize->normalizeDashes($fileName);
+
+        if( $this->_sanitize->isEmpty($fileName) ) return false;
 
         if($fileName === false) return false;
 
-        return $fileName;
+        $this->_filename = str_split($fileName,255)[0];
 
+    }
+
+    /**
+    * Fill User Tags
+    * 
+    * @since 0.9.3
+    * 
+    */
+    private function fillUserTags($userTags) {
+
+        $tags = $this->_tags;
+        $userDatas = $this->_userDatas;
+        
+        $postId = $this->getCurrentId();
+        
+        if(!$postId && $userDatas['id']) $postId = $userDatas['id'];
+        
+        foreach ($tags as $key => $array) {
+            
+            $value = false;
+
+            if(is_array($userDatas) && array_key_exists($key, $userDatas)) {
+                
+                if( !$this->_sanitize->isEmpty($userDatas[$key]) ) $value = $userDatas[$key];
+            
+            }
+
+            if(!$postId && !$value) continue;
+                
+                switch($key) {
+                    case 'title' :
+                        $userTags['tags'][$key] = $value ? $value : $this->getTheTitle($postId);
+                    break;
+                    case 'slug' :
+                        $userTags['tags'][$key] = $value ? $value : $this->getSlug($postId);
+                    break;
+                    case 'type' :
+                        $userTags['tags'][$key] = $value ? $value : $this->getPostType($postId);
+                    break;
+                    case 'tag' :
+                        $userTags['tags'][$key] = $value ? $this->getTermSlug($value) : $this->getFirstTag($postId);
+                    break;
+                    case 'cat' :
+                        $userTags['tags'][$key] = $value ? $this->getTermSlug($value) : $this->getFirstCat($postId);
+                    break;
+                    case 'author' :
+                        $userTags['tags'][$key] = $value ? $this->getAuthorName($value) : $this->getAuthor($postId);
+                    break;
+                    case 'taxonomy' :
+                        $userTags['tags'][$key] = $value ? $this->getTaxonomyName($value) : $this->getTaxonomyName($postId);
+                    break;
+                    case 'datepublished' :
+                        $userTags['tags'][$key] = $this->getDatePublished($postId);
+                    break;
+                    case 'datemodified'  :
+                        $userTags['tags'][$key] = $this->getDateModified($postId);
+                    break;
+                } 
+        }
+
+
+        return $userTags;
+    }
+
+    /**
+    * Fill Global Tags
+    * 
+    * @since 0.9.3
+    * 
+    */
+    private function fillGlobalTags($userTags) {
+        
+        foreach ($this->_tags as $key => $array) {
+    
+            switch($key) {
+                case 'blogname' :
+                    $userTags['tags'][$key] = sanitize_title(sanitize_option('blogname',get_bloginfo('name')));
+                break;
+                case 'blogdesc' :
+                    $userTags['tags'][$key] = sanitize_title(sanitize_option('blogdescription',get_bloginfo('description')));
+                break;
+                case 'filename' :
+                    $userTags['tags'][$key] = sanitize_title($this->_originalFilename);
+                break;
+            } 
+        }
+
+        return $userTags;
+    }
+
+    /**
+    * Fill search and replace tags
+    * 
+    * @since 0.9.4
+    * 
+    */
+    private function fillSearchReplaceTags($userTags) {
+
+        if(!is_array($this->_tags['replace-1'])) return false;
+
+        foreach ($this->_userTags as $i => $replace) {
+
+            $key = 'replace-'.$i; 
+
+            $userTags['tags'][$key] = $replace;
+            
+        }
+
+        return $userTags;
+    }
+
+    /**
+    * Search and replace
+    * 
+    * @since 0.9.4
+    */
+    private function searchReplace() {
+
+        if($this->_filename === false && $this->_originalFilename === false) return false;
+        
+        $fileName = $this->_filename ? $this->_filename : $this->_originalFilename;
+
+        $rules = false;
+
+        if( $this->hasUserOption('default_search_replace') ) $rules = $this->_userOptions['default_search_replace'];
+        
+        if(!$rules) return false;
+
+        if(!is_array($rules)) return false;
+
+        $n = 0;
+
+        $tags = array();
+
+        foreach($rules as $key => $rule) {
+
+            if( isset($rule['is_paused']) && $rule['is_paused'] !== '0' ) {
+                $tags[$key] = null;
+                continue;
+            }
+            if( $this->_sanitize->isEmpty($rule['search']) ) {
+                $tags[$key] = null;
+                continue;
+            }
+
+            $fileName = str_replace($rule['search'], $rule['replace'], $fileName);
+            
+            if(!$this->_sanitize->isEmpty($rule['replace'])) $tags[$key] = $rule['replace'];
+        }
+        
+        if(!$this->_sanitize->isEmpty($fileName)) $this->_filename = $fileName;
+        
+        if(!empty($tags)) $this->_userTags = $tags;
+
+        return $n;
+    }
+
+    /**
+    * Apply search and replace on raw filename?
+    * 
+    * @since 0.9.4
+    */
+    private function filterRawFilename() {
+
+        $key = 'default_search_replace_options';
+        
+        if($this->hasUserOption($key)) {
+            
+            if(!isset($this->_userOptions[$key]['fields']['filter_raw_filenames'])) return false;
+
+            if($this->_userOptions[$key]['fields']['filter_raw_filenames'] === '0') return false;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+    * Does User option exist by given key?
+    * 
+    * @since 0.9.4
+    */
+    private function hasUserOption($key) {
+
+        if( !isset($this->_userOptions[$key]) ) return false;
+        
+        if( $this->_sanitize->isEmpty($this->_userOptions[$key]) ) return false;
+
+        return true;
+
+    }
+
+    /**
+    * Set user options from db option 'asf_options'
+    * 
+    * @since 0.9.3
+    * 
+    */
+    private function getUserOptions() {
+        
+        $userOptions = get_option('asf_options');
+        
+        return $this->_sanitize->sanitizeUserOptions($userOptions);
+    } 
+
+    /**
+    * Get user datas from db option 'asf_tmp_options'
+    * 
+    * @since 0.9.3
+    * 
+    */
+    private function getUserDatas() {
+        
+        $userId = $this->_sanitize->sanitizeId(get_current_user_id());
+        
+        if(!$userId) return false;
+
+        $userValues = get_option('asf_tmp_options');
+
+        if(!isset($userValues['datas'][$userId])) return false;
+
+        $userDatas = $this->_sanitize->sanitizeTmpDatas($userValues['datas'][$userId]);
+
+        if(!$userDatas) return false;
+
+        return $userValues['datas'][$userId];
+    }
+
+    /**
+    * Get tags setup from asf_options::_options['tags'];
+    * 
+    * @since 0.9.3
+    * 
+    */
+    private function getTagsOptions() {
+
+        $options = new asf_options;
+        
+        $options = $options->getOptions();
+        
+        return $options['tags'];
     }
 
     /**
@@ -134,7 +394,7 @@ class asf_FileName {
                 break;
             case isset($_GET['tag_ID']) && $this->_sanitize->sanitizeId($_GET['tag_ID']) :
 
-                $postId = $this->_sanitize->sanitizeId($_POST['post_id']);
+                $postId = $this->_sanitize->sanitizeId($_GET['tag_ID']);
 
                 if($post = get_post($postId)) {
 
@@ -146,185 +406,6 @@ class asf_FileName {
         }
 
         return $id;
-    }
-
-    /**
-    * Fill Options
-    * 
-    * @since 0.9.0
-    * 
-    */
-    private function fillOptions() {
-        
-        $options = $this->getOptions();
-        
-        if( !isset($options['tags']) && !is_array($options['tags']) ) return false;
-        
-        if($userDatas = $this->getUserDatas($options)) {
-
-            $options = $this->fillUserOptions($options, $userDatas);
-            
-        }
-
-        $options = $this->fillGlobalOptions($options);
-
-        return $options;
-    }
-
-    /**
-    * Fill User Options
-    * 
-    * @since 0.9.3
-    * 
-    */
-    private function fillUserOptions($options, $userDatas) {
-        
-        $postId = $this->getCurrentId();
-        
-        if(!$postId && $userDatas['id']) $postId = $userDatas['id'];
-        
-        foreach ($options['tags'] as $key => $array) {
-            
-            $value = false;
-
-            if(is_array($userDatas) && array_key_exists($key, $userDatas)) {
-                
-                if( !empty($userDatas[$key]) ) $value = $userDatas[$key];
-            
-            }
-
-            if(!$postId && !$value) continue;
-                
-                switch($key) {
-                    case 'title' :
-                        $options['tags'][$key]['value'] = $value ? $value : $this->getTheTitle($postId);
-                    break;
-                    case 'slug' :
-                        $options['tags'][$key]['value'] = $value ? $value : $this->getSlug($postId);
-                    break;
-                    case 'type' :
-                        $options['tags'][$key]['value'] = $value ? $value : $this->getPostType($postId);
-                    break;
-                    case 'tag' :
-                        $options['tags'][$key]['value'] = $value ? $this->getTermSlug($value) : $this->getFirstTag($postId);
-                    break;
-                    case 'cat' :
-                        $options['tags'][$key]['value'] = $value ? $this->getTermSlug($value) : $this->getFirstCat($postId);
-                    break;
-                    case 'author' :
-                        $options['tags'][$key]['value'] = $value ? $this->getAuthorName($value) : $this->getAuthor($postId);
-                    break;
-                    case 'taxonomy' :
-                        $options['tags'][$key]['value'] = $value ? $this->getTaxonomyName($value) : $this->getTaxonomyName($postId);
-                    break;
-                    case 'datepublished' :
-                        $options['tags'][$key]['value'] = $this->getDatePublished($postId);
-                    break;
-                    case 'datemodified'  :
-                        $options['tags'][$key]['value'] = $this->getDateModified($postId);
-                    break;
-                } 
-        }
-
-
-        return $options;
-    }
-
-    /**
-    * Fill Global Options
-    * 
-    * @since 0.9.3
-    * 
-    */
-    private function fillGlobalOptions($options) {
-        
-        foreach ($options['tags'] as $key => $array) {
-    
-            switch($key) {
-                case 'blogname' :
-                $options['tags'][$key]['value'] = sanitize_title(sanitize_option('blogname',get_bloginfo('name')));
-                break;
-                case 'blogdesc' :
-                    $options['tags'][$key]['value'] = sanitize_title(sanitize_option('blogdescription',get_bloginfo('description')));
-                break;
-                case 'filename' :
-                    $options['tags'][$key]['value'] = sanitize_title($this->_originalFilename);
-                break;
-            } 
-        }
-
-        return $options;
-    }
-
-    /**
-    * Search and replace
-    * 
-    * @since 0.9.4
-    */
-    private function searchReplace() {
-
-        $fileName = $this->_originalFilename;
-
-        $userDatas = $this->getUserOptions();
-
-        $rules = $this->_sanitize->sanitizeRepeaterField($userDatas,'default_search_replace');
-        
-        if(!$rules) return $fileName;
-
-        foreach($rules as $rule) {
-
-            $fileName = str_replace($rule['search'],$rule['replace'],$fileName);
-
-        }
-
-        return $fileName;
-    }
-
-    /**
-    * Get default options from asf_options::
-    * @since 0.9.3
-    */
-    private function getOptions() {
-        
-        $options = new asf_options;
-        
-        return $options->getOptions();
-    }
-
-    /**
-    * Get user options from db option 'asf_options'
-    * @since 0.9.3
-    */
-    private function getUserOptions() {
-        
-        $options = $this->getOptions();
-        
-        $userOptions = get_option('asf_options');
-        
-        return $this->_sanitize->sanitizeUserOptions($userOptions,$options);
-    } 
-
-    /**
-    * Get user datas from db option 'asf_tmp_options'
-    * 
-    * @since 0.9.3
-    * 
-    */
-    private function getUserDatas($options) {
-        
-        $userId = $this->_sanitize->sanitizeId(get_current_user_id());
-        
-        if(!$userId) return false;
-
-        $userValues = get_option('asf_tmp_options');
-
-        if(!isset($userValues['datas'][$userId])) return false;
-
-        $userDatas = $this->_sanitize->sanitizeTmpDatas($options['datas'], $userValues['datas'][$userId]);
-
-        if(!$userDatas) return false;
-
-        return $userDatas;
     }
 
     /**

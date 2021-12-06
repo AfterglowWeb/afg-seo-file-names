@@ -290,15 +290,16 @@ class asf_optionPage {
     public function searchReplaceOptions() {
 
         $options = $this->_options->getOptions(); 
+
         
         $key = 'default_search_replace_options';
 
-        if( !isset($options['options'][$key]) ) return;
-
-        $args = $options['options'][$key];
         
-        $value = false;
-        if(isset($this->_userOptions[$key])) {    
+        if( !isset($options['options'][$key]['fields']['filter_raw_filenames']) ) return;
+
+        $args = $options['options'][$key]['fields']['filter_raw_filenames'];
+        
+        if(isset($this->_userOptions[$key]['fields']['filter_raw_filenames'])) {    
                 $args['value'] = '1';
                 $args['checked'] = 'checked';       
 
@@ -308,7 +309,7 @@ class asf_optionPage {
                 $args['checked'] = '';    
 
         } ?>
-        <div class="asf-field-wrapper asf-users">
+        <div class="asf-field-wrapper">
             <p class="title">
                 <b><?php esc_html_e('Search and replace rules options','seo-file-names'); ?></b>
             </p>

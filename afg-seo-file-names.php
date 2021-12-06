@@ -11,7 +11,7 @@
  * Plugin Name: SEO File Names
  * Plugin URI: https://afterglow-web.agency/en/seo-file-names/
  * Description: SEO File Names aims to save you time and boost your SEO by automatically renaming the files you upload to the media library with SEO friendly names.
- * Version: 0.9.34
+ * Version: 0.9.35
  * Author: Afterglow Web Agency
  * Author URI: https://afterglow-web.agency
  * Requires at least: 4.9.18
@@ -34,8 +34,7 @@ if(version_compare(get_bloginfo('version'),'4.9.18', '<') ) {
 
 define( 'AFG_ASF_PATH', plugin_dir_path( __FILE__ )  );
 define( 'AFG_ASF_URL', plugin_dir_url( __FILE__ ) );
-//define( 'AFG_ASF_VERSION', '0.9.34' );
-define( 'AFG_ASF_VERSION', rand() );
+define( 'AFG_ASF_VERSION', '0.9.35' );
 define( 'AFG_IS_ASF', isset($_GET['page']) && strpos($_GET['page'], 'asf-') == 0 ? true : false);
 
 add_action( 'plugins_loaded', 'asf_init' );
@@ -293,11 +292,6 @@ function asf_saveMeta() {
 
     if(isset($_POST['asf_datas'])) {
         
-        $options = new asf_options;
-        $options = $options->getOptions();
-        
-        if(!isset($options['datas']) && is_array(!$options['datas'])) wp_die();
-        
         $sanitize = new asf_Sanitize;
         $string = $sanitize->sanitizeJson($_POST['asf_datas']);
 
@@ -307,7 +301,7 @@ function asf_saveMeta() {
         $userId = asf_getCurrentUserId();
         if(!$userId) wp_die();
         
-        $datas = $sanitize->sanitizeTmpDatas($options['datas'],$datas);
+        $datas = $sanitize->sanitizeTmpDatas($datas);
         if(!$datas) wp_die();
         
         $previousDatas = asf_getUsersData();
@@ -315,6 +309,7 @@ function asf_saveMeta() {
         
         update_option('asf_tmp_options', array('datas' => $previousDatas ) );
         wp_die();
+        
     }
     wp_die();
 }
@@ -328,19 +323,23 @@ function asf_saveMeta() {
 * 
 */
 function asf_getUsersData() { 
-    $options = new asf_options;
-    $options = $options->getOptions();
-    if(!isset($options['datas']) && is_array(!$options['datas'])) return false;
-
+    
     $userValues = get_option('asf_tmp_options');
+    
     if(!isset($userValues['datas'])) return false;
     
     $sanitize = new asf_Sanitize;
+    
     $array = false; 
+    
     foreach ($userValues['datas'] as $userID => $datas) {
+
         $userID = $sanitize->sanitizeId($userID);
-        $array[$userID] = $sanitize->sanitizeTmpDatas($options['datas'], $datas);
+
+        $array[$userID] = $sanitize->sanitizeTmpDatas($datas);
+
     }
+
     return $array;
 } 
 
@@ -353,18 +352,18 @@ function asf_getUsersData() {
 * 
 */
 function asf_getCurrentUserData() {
+
     $userId = asf_getCurrentUserId();
+
     if(!$userId) return false;
     
-    $options = new asf_options;
-    $options = $options->getOptions();
-    if(!isset($options['datas']) && is_array(!$options['datas'])) return false;
-
     $userValues = get_option('asf_tmp_options');
+
     if(!isset($userValues['datas'][$userId])) return false;
     
     $sanitize = new asf_Sanitize;
-    return $sanitize->sanitizeTmpDatas($options['datas'], $userValues['datas'][$userId] );
+
+    return $sanitize->sanitizeTmpDatas($userValues['datas'][$userId] );
 } 
 
 /**
@@ -376,9 +375,13 @@ function asf_getCurrentUserData() {
 * 
 */
 function asf_getCurrentUserId() {
+
     $sanitize = new asf_Sanitize;
+
     $userId = $sanitize->sanitizeId(get_current_user_id());
+
     if(!$userId) return false;
+    
     return $userId;
 } 
 

@@ -7,6 +7,9 @@ function asf_ajax(datas) {
                 asf_datas: JSON.stringify(datas),
                 asf_nonce: asfAjax.nonce,
             },
+            success: function(response) {
+                //console.log(response);
+            },
             error : function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR + " :: " + textStatus + " :: " + errorThrown);
             },

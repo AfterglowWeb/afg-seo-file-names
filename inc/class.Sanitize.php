@@ -47,7 +47,10 @@ class asf_Sanitize {
                    		$userOptions[$key] = $value ? $this->sanitizeIds($value) : '';
                    		break;
                    	case 'default_search_replace' :
-                   		$userOptions[$key] = $value ? $this->sanitizeRepeaterField($value,'default_search_replace') : '';
+                   		$userOptions[$key] = $value && is_array($value) ? $value : '';
+                   		break;
+                   	case 'default_search_replace_options' :
+                   		$userOptions[$key] = $value && is_array($value) ? $value : '';
                    		break;
                 }
             }
@@ -60,9 +63,11 @@ class asf_Sanitize {
 	* Sanitize db user option 'asf_tmp_options'
 	* @since 0.9.3
 	*/
-	public function sanitizeTmpDatas($options, $datas = array()) {
+	public function sanitizeTmpDatas($datas) {
 
 	    if(!is_array($datas)) return false;
+
+	    $options = $this->_options['datas'];
 
 	    foreach ($datas as $key => $value) {
 	        if(!array_key_exists($key, $options)) {
